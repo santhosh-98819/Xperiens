@@ -1,4 +1,4 @@
-import { initializeApp, getApps, App } from 'firebase-admin/app';
+import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
 import fs from 'fs';
@@ -24,8 +24,24 @@ try {
 
 let app: App;
 if (!getApps().length) {
-  // Explicitly configure projectId from firebase-applet-config.json so ID token "aud" claim matches client project ID
-  app = initializeApp(projectId ? { projectId } : {});
+  const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
+  
+  if (serviceAccount) {
+    try {
+      const parsedAccount = JSON.parse(serviceAccount);
+      app = initializeApp({
+        credential: cert(parsedAccount),
+        projectId: parsedAccount.project_id || projectId
+      });
+      console.log('Firebase Admin initialized via service account environment variable.');
+    } catch (err) {
+      console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT env var:', err);
+      app = initializeApp(projectId ? { projectId } : {});
+    }
+  } else {
+    // Default fallback (works automatically on Google Cloud Run)
+    app = initializeApp(projectId ? { projectId } : {});
+  }
 } else {
   app = getApps()[0];
 }
