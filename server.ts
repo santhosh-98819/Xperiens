@@ -43,7 +43,7 @@ const _filename = getFilename();
 const _dirname = getDirname();
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.set('trust proxy', 1);
 app.use(express.json());
@@ -717,6 +717,9 @@ app.post('/api/analyze-problem', optionalAuthMiddleware, aiLimiter, async (req: 
       : 'community_grounded';
 
     const ai = getGeminiClient();
+    if (!ai) {
+      console.warn('GEMINI_API_KEY is not set. Falling back to deterministic reasoning engine.');
+    }
 
     let analysisResult: {
       summary: string;
@@ -793,7 +796,7 @@ CRITICAL INSTRUCTIONS:
 `;
 
         const response = await ai.models.generateContent({
-          model: 'gemini-3.8-flash',
+          model: 'gemini-1.5-flash',
           contents: prompt,
           config: {
             responseMimeType: 'application/json',
@@ -871,7 +874,7 @@ CRITICAL INSTRUCTIONS:
           uncertainties: parsed.uncertainties || [],
         };
       } catch (geminiError: any) {
-        console.warn('Gemini analysis failed or quota exceeded; applying analytical fallback reasoning:', geminiError?.message || geminiError);
+        console.error('Gemini analysis failed or quota exceeded:', geminiError?.message || geminiError);
         // Graceful fallback to deterministic expert analytical reasoning engine
         analysisResult = generateFallbackAnalysis(problemInput, topReal, topDemo, evidenceStats);
       }
@@ -882,8 +885,8 @@ CRITICAL INSTRUCTIONS:
 
     // Safety checks for sensitive categories
     let safetyNotice: string | undefined = undefined;
-    const lowerCategory = problemInput.category.toLowerCase();
-    if (lowerCategory.includes('finance') || problemInput.problem.toLowerCase().includes('debt') || problemInput.problem.toLowerCase().includes('invest')) {
+    const lowerCategory = (problemInput.category || 'Other').toLowerCase();
+    if (lowerCategory.includes('finance') || (problemInput.problem || '').toLowerCase().includes('debt') || (problemInput.problem || '').toLowerCase().includes('invest')) {
       safetyNotice = 'Financial Disclaimer: Xperiens provides educational insights and community experiences. It does not constitute certified financial or fiduciary advice. Consult a certified financial planner for high-stakes financial decisions.';
     } else if (problemInput.problem.toLowerCase().includes('medical') || problemInput.problem.toLowerCase().includes('health') || problemInput.problem.toLowerCase().includes('doctor')) {
       safetyNotice = 'Medical Notice: Xperiens guidance and community experiences must never replace consultation with a licensed healthcare professional. In an emergency, contact emergency medical services immediately.';
@@ -1532,7 +1535,7 @@ Return valid JSON adhering strictly to the schema.
 `;
 
         const response = await ai.models.generateContent({
-          model: 'gemini-3.8-flash',
+          model: 'gemini-1.5-flash',
           contents: prompt,
           config: {
             responseMimeType: 'application/json',

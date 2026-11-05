@@ -223,7 +223,7 @@ export async function analyzeProblem(problemInput: ProblemInput): Promise<Soluti
     body: JSON.stringify(problemInput),
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ message: 'Failed to analyze situation.' }));
+    const err = await res.json().catch(() => ({ message: 'Failed to analyze situation. The backend server may be unreachable or an error occurred.' }));
     throw new Error(err.message || 'Analysis failed');
   }
   const data = await res.json();
