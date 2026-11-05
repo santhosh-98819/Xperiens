@@ -1,0 +1,17 @@
+{
+  "name": "Xperiens — Real Experiences. Real Solutions.",
+  "short_name": "Xperiens",
+  "description": "An experience-based AI problem-solving platform integrating human experiences, action-outcome analysis, and intelligent reasoning.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8F7F3",
+  "theme_color": "#29265B",
+  "icons": [
+    {
+      "src": "/xperiens-logo-dark.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

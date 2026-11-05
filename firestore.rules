@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // User Profiles: Users can read and write their own document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Experiences Repository: Publicly readable for all community members & visitors
+    match /experiences/{experienceId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usefulCount', 'notUsefulCount']);
+      allow delete: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid);
+    }
+    
+    // Problems
+    match /problems/{problemId} {
+      allow read, write: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
+    }
+    
+    // Solutions
+    match /solutions/{solutionId} {
+      allow read, write: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
+    }
+    
+    // Outcome Feedback
+    match /outcomeFeedback/{feedbackId} {
+      allow read, write: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
+    }
+    
+    // Saved Solutions
+    match /savedSolutions/{savedId} {
+      allow read, write: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
+    }
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "entities": {
+    "UserProfile": {
+      "collection": "users",
+      "fields": {
+        "id": { "type": "string", "required": true },
+        "uid": { "type": "string", "required": false },
+        "name": { "type": "string", "required": true },
+        "displayName": { "type": "string", "required": false },
+        "email": { "type": "string", "required": false },
+        "photoURL": { "type": "string", "required": false },
+        "about": { "type": "string", "required": false },
+        "interests": { "type": "array", "required": false },
+        "isAnonymous": { "type": "boolean", "required": true },
+        "profileVisibility": { "type": "string", "required": false },
+        "themePreference": { "type": "string", "required": false },
+        "aiWritingAssistEnabled": { "type": "boolean", "required": false },
+        "createdAt": { "type": "string", "required": true },
+        "updatedAt": { "type": "string", "required": true },
+        "experiencesShared": { "type": "number", "required": false },
+        "solutionsTested": { "type": "number", "required": false },
+        "peopleHelped": { "type": "number", "required": false },
+        "savedSolutionIds": { "type": "array", "required": false },
+        "preferences": { "type": "object", "required": false },
+        "displayNamePreference": { "type": "string", "required": false }
+      }
+    },
+    "Experience": {
+      "collection": "experiences",
+      "fields": {
+        "id": { "type": "string", "required": true },
+        "userId": { "type": "string", "required": true },
+        "authorName": { "type": "string", "required": true },
+        "isAnonymous": { "type": "boolean", "required": true },
+        "isDemo": { "type": "boolean", "required": true },
+        "isPublic": { "type": "boolean", "required": true },
+        "title": { "type": "string", "required": true },
+        "category": { "type": "string", "required": true },
+        "situation": { "type": "string", "required": true },
+        "actionsTaken": { "type": "array", "required": true },
+        "whyChosen": { "type": "string", "required": false },
+        "outcome": { "type": "string", "required": true },
+        "outcomeStatus": { "type": "string", "required": true },
+        "lesson": { "type": "string", "required": true },
+        "whatWouldChange": { "type": "string", "required": false },
+        "qualityLabel": { "type": "string", "required": false },
+        "qualityScore": { "type": "number", "required": false },
+        "usefulCount": { "type": "number", "required": false },
+        "notUsefulCount": { "type": "number", "required": false },
+        "createdAt": { "type": "string", "required": true },
+        "tags": { "type": "array", "required": false }
+      }
+    },
+    "Problem": {
+      "collection": "problems",
+      "fields": {
+        "id": { "type": "string", "required": true },
+        "userId": { "type": "string", "required": true },
+        "problem": { "type": "string", "required": true },
+        "context": { "type": "string", "required": false },
+        "goal": { "type": "string", "required": false },
+        "triedSoFar": { "type": "string", "required": false },
+        "constraints": { "type": "string", "required": false },
+        "category": { "type": "string", "required": true },
+        "urgency": { "type": "string", "required": true },
+        "createdAt": { "type": "string", "required": true }
+      }
+    },
+    "Solution": {
+      "collection": "solutions",
+      "fields": {
+        "id": { "type": "string", "required": true },
+        "userId": { "type": "string", "required": true },
+        "problemId": { "type": "string", "required": true },
+        "summary": { "type": "string", "required": true },
+        "createdAt": { "type": "string", "required": true }
+      }
+    },
+    "OutcomeFeedback": {
+      "collection": "outcomeFeedback",
+      "fields": {
+        "id": { "type": "string", "required": true },
+        "userId": { "type": "string", "required": true },
+        "solutionId": { "type": "string", "required": true },
+        "result": { "type": "string", "required": true },
+        "whatHappened": { "type": "string", "required": true },
+        "whatLearned": { "type": "string", "required": true },
+        "whatWouldChange": { "type": "string", "required": false },
+        "createdAt": { "type": "string", "required": true }
+      }
+    },
+    "SavedSolution": {
+      "collection": "savedSolutions",
+      "fields": {
+        "id": { "type": "string", "required": true },
+        "userId": { "type": "string", "required": true },
+        "solutionId": { "type": "string", "required": true },
+        "title": { "type": "string", "required": true },
+        "category": { "type": "string", "required": true },
+        "savedAt": { "type": "string", "required": true }
+      }
+    }
+  }
+}

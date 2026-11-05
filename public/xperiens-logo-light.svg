@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 50" fill="none" width="100%" height="100%">
+  <defs>
+    <!-- Brand Mark Gradient for Dark Theme -->
+    <linearGradient id="xp-mark-grad-light" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9E98EC" />
+      <stop offset="100%" stop-color="#7771C8" />
+    </linearGradient>
+    <linearGradient id="xp-spark-grad-light" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#B2ABFF" />
+      <stop offset="100%" stop-color="#E9E7F2" />
+    </linearGradient>
+  </defs>
+
+  <!-- Symbol Mark (Overlapping Nodes / Dynamic 'X') -->
+  <g transform="translate(6, 5)">
+    <!-- Main Left Arm -->
+    <path d="M6 34 L18 8 C19 6 21.5 6 22.5 8 L34 34 C35 36 33.5 38 31.5 38 L8.5 38 C6.5 38 5 36 6 34 Z" fill="url(#xp-mark-grad-light)" />
+    <!-- Dynamic Overlapping Swoosh forming Xperiens emblem -->
+    <path d="M28 6 L16 32 C15 34 16.5 36 18.5 36 L31 36 C33 36 34.5 34 33.5 32 L22 6 C21 4 19 4 18 6 Z" fill="url(#xp-spark-grad-light)" opacity="0.9" />
+    <!-- Node Sparkle -->
+    <circle cx="20" cy="20" r="3.5" fill="#25243A" />
+  </g>
+
+  <!-- Typographic Brand Name: Xperiens -->
+  <text x="56" y="33" font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif" font-weight="800" font-size="26" fill="#F8F7F3" letter-spacing="-0.5">Xperiens</text>
+  
+  <!-- Subtle Tagline accent dot -->
+  <circle cx="178" cy="30" r="3" fill="#9E98EC" />
+</svg>

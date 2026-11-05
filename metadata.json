@@ -1,0 +1,6 @@
+{
+  "name": "Xperiens",
+  "description": "Real Experiences. Real Solutions. An experience-based AI problem-solving platform integrating human experiences, action-outcome analysis, and intelligent reasoning.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
