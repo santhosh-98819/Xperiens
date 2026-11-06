@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { UserProfile } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useWritingAssist } from '../contexts/WritingAssistContext';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { X, Shield, Check, LogOut, Sparkles, Globe } from 'lucide-react';
+import { X, Shield, Check, LogOut, Globe } from 'lucide-react';
 import { ViewMode } from '../App';
 
 interface AuthModalProps {
@@ -16,7 +15,6 @@ interface AuthModalProps {
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onNavigate }) => {
   const { currentUser, userProfile, isGuest, logout, updateUserPreferences, loginWithGoogle } = useAuth();
-  const { isEnabled: isWritingAssistEnabled, setIsEnabled: setWritingAssistEnabled } = useWritingAssist();
   const { t } = useLanguage();
   const [name, setName] = useState(userProfile?.name || 'Explorer');
   const [isSaved, setIsSaved] = useState(false);
@@ -127,23 +125,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onNavigat
                     <span className="text-[10px] font-bold uppercase tracking-widest">{t('profile.language')}</span>
                  </div>
                  <LanguageSwitcher variant="dropdown" />
-              </div>
-
-              <div className="p-4 rounded-xl bg-brand-bg dark:bg-dark-sec-bg border border-brand-border dark:border-dark-border flex items-center justify-between">
-                 <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-brand-text-primary dark:text-dark-text-primary">
-                       <Sparkles className="w-4 h-4 text-brand-accent dark:text-dark-accent" />
-                       <span className="text-xs font-bold uppercase tracking-widest">Writing Assistant</span>
-                    </div>
-                    <p className="text-[10px] text-brand-text-secondary dark:text-dark-text-secondary font-light">Real-time optimization while typing.</p>
-                 </div>
-                 <button
-                   type="button"
-                   onClick={() => setWritingAssistEnabled(!isWritingAssistEnabled)}
-                   className={`relative w-10 h-5 rounded-full transition-colors ${isWritingAssistEnabled ? 'bg-brand-accent dark:bg-dark-accent' : 'bg-brand-border dark:border-dark-border'}`}
-                 >
-                   <div className={`absolute top-1 left-1 w-3 h-3 rounded-full bg-white transition-transform ${isWritingAssistEnabled ? 'translate-x-5' : ''}`} />
-                 </button>
               </div>
 
               <div className="flex items-center gap-3 p-4 bg-emerald-50 dark:bg-emerald-950/20 rounded-xl text-[10px] text-emerald-800 dark:text-emerald-300 font-light leading-relaxed border border-emerald-100 dark:border-emerald-900">

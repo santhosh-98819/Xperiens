@@ -26,7 +26,6 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useWritingAssist } from '../contexts/WritingAssistContext';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { BRAND_TAGLINE } from '../constants/brand';
 import {
@@ -49,7 +48,6 @@ import {
   getLocalSavedSolutions,
   deleteExperience,
 } from '../services/api';
-import { AiWritingField } from '../components/AiWritingField';
 import { ViewMode } from '../App';
 
 interface ProfileViewProps {
@@ -104,7 +102,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     deleteUserAccount,
   } = useAuth();
 
-  const { isEnabled: aiWritingEnabled, setIsEnabled: setAiWritingEnabled } = useWritingAssist();
   const { themePreference, setThemePreference } = useTheme();
   const { t } = useLanguage();
 
@@ -212,7 +209,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         interests: editInterests,
         isAnonymous: editAnonymousDefault,
         profileVisibility: editVisibility,
-        aiWritingAssistEnabled: aiWritingEnabled,
       });
       setSaveSuccessMsg(t('profile.save_success', 'Profile updated successfully.'));
       setTimeout(() => {
@@ -483,21 +479,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               </div>
             </div>
 
-            <div className="space-y-6">
-              <h3 className="text-xl font-serif font-bold text-brand-text-primary dark:text-dark-text-primary border-b border-brand-border dark:border-dark-border pb-4">AI Assistant</h3>
-              <div className="flex items-center justify-between p-6 rounded-xl bg-brand-bg dark:bg-dark-sec-bg border border-brand-border dark:border-dark-border">
-                <div className="space-y-1">
-                   <div className="text-sm font-bold text-brand-text-primary dark:text-dark-text-primary">Writing Suggestions</div>
-                   <div className="text-xs text-brand-text-secondary dark:text-dark-text-secondary">Enable Gemini-powered drafting for your stories.</div>
-                </div>
-                <button
-                  onClick={() => setAiWritingEnabled(!aiWritingEnabled)}
-                  className={`relative w-12 h-6 rounded-full transition-colors ${aiWritingEnabled ? 'bg-brand-accent dark:bg-dark-accent' : 'bg-brand-border dark:bg-dark-border'}`}
-                >
-                  <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${aiWritingEnabled ? 'translate-x-6' : ''}`} />
-                </button>
-              </div>
-            </div>
+
 
             <div className="space-y-6 pt-12">
                <h3 className="text-sm font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest">Danger Zone</h3>

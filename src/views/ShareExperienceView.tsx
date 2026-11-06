@@ -5,7 +5,6 @@ import { Category, OutcomeStatus, Experience } from '../types';
 import { submitExperience } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { AiWritingField } from '../components/AiWritingField';
 import {
   SHARE_CATEGORIES,
   getCategoryConfig,
@@ -210,64 +209,117 @@ export const ShareExperienceView: React.FC<ShareExperienceViewProps> = ({
             </div>
             
             <div className="space-y-10">
-              <AiWritingField
-                id="q1"
-                fieldName={t('share.pillars.p1.field')}
-                label={t('share.pillars.p1.label')}
-                value={q1TryingToDo}
-                onChange={setQ1TryingToDo}
-                placeholder={t('share.pillars.p1.placeholder')}
-                helperText={t('share.pillars.p1.helper')}
-                required
-              />
-              <AiWritingField
-                id="q2"
-                fieldName={t('share.pillars.p2.field')}
-                label={t('share.pillars.p2.label')}
-                value={q2ProblemFaced}
-                onChange={setQ2ProblemFaced}
-                placeholder={t('share.pillars.p2.placeholder')}
-                helperText={t('share.pillars.p2.helper')}
-              />
-              <AiWritingField
-                id="q3"
-                fieldName={t('share.pillars.p3.field')}
-                label={t('share.pillars.p3.label')}
-                value={q3WhatTried}
-                onChange={setQ3WhatTried}
-                placeholder={t('share.pillars.p3.placeholder')}
-                helperText={t('share.pillars.p3.helper')}
-                required
-              />
-              <AiWritingField
-                id="q4"
-                fieldName={t('share.pillars.p4.field')}
-                label={t('share.pillars.p4.label')}
-                value={q4WhatHappened}
-                onChange={setQ4WhatHappened}
-                placeholder={t('share.pillars.p4.placeholder')}
-                helperText={t('share.pillars.p4.helper')}
-                required
-              />
-              <AiWritingField
-                id="q5"
-                fieldName={t('share.pillars.p5.field')}
-                label={t('share.pillars.p5.label')}
-                value={q5WhatLearned}
-                onChange={setQ5WhatLearned}
-                placeholder={t('share.pillars.p5.placeholder')}
-                helperText={t('share.pillars.p5.helper')}
-                required
-              />
-              <AiWritingField
-                id="q6"
-                fieldName={t('share.pillars.p6.field')}
-                label={t('share.pillars.p6.label')}
-                value={q6WhatDoDifferently}
-                onChange={setQ6WhatDoDifferently}
-                placeholder={t('share.pillars.p6.placeholder')}
-                helperText={t('share.pillars.p6.helper')}
-              />
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="q1" className="text-xs font-bold uppercase tracking-widest text-brand-text-secondary dark:text-dark-text-secondary">
+                    {t('share.pillars.p1.label')} <span className="text-rose-500">*</span>
+                  </label>
+                  <span className="text-[10px] font-mono text-brand-text-secondary opacity-60">{t('share.pillars.p1.field')}</span>
+                </div>
+                <textarea
+                  id="q1"
+                  rows={3}
+                  value={q1TryingToDo}
+                  onChange={(e) => setQ1TryingToDo(e.target.value)}
+                  placeholder={t('share.pillars.p1.placeholder')}
+                  className="w-full p-4 rounded-xl border border-brand-border dark:border-dark-border bg-brand-bg dark:bg-dark-bg text-brand-text-primary dark:text-dark-text-primary focus:ring-2 focus:ring-brand-accent dark:focus:ring-dark-accent outline-none font-light leading-relaxed resize-y"
+                  required
+                />
+                <p className="text-xs text-brand-text-secondary dark:text-dark-text-secondary italic">{t('share.pillars.p1.helper')}</p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="q2" className="text-xs font-bold uppercase tracking-widest text-brand-text-secondary dark:text-dark-text-secondary">
+                    {t('share.pillars.p2.label')}
+                  </label>
+                  <span className="text-[10px] font-mono text-brand-text-secondary opacity-60">{t('share.pillars.p2.field')}</span>
+                </div>
+                <textarea
+                  id="q2"
+                  rows={3}
+                  value={q2ProblemFaced}
+                  onChange={(e) => setQ2ProblemFaced(e.target.value)}
+                  placeholder={t('share.pillars.p2.placeholder')}
+                  className="w-full p-4 rounded-xl border border-brand-border dark:border-dark-border bg-brand-bg dark:bg-dark-bg text-brand-text-primary dark:text-dark-text-primary focus:ring-2 focus:ring-brand-accent dark:focus:ring-dark-accent outline-none font-light leading-relaxed resize-y"
+                />
+                <p className="text-xs text-brand-text-secondary dark:text-dark-text-secondary italic">{t('share.pillars.p2.helper')}</p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="q3" className="text-xs font-bold uppercase tracking-widest text-brand-text-secondary dark:text-dark-text-secondary">
+                    {t('share.pillars.p3.label')} <span className="text-rose-500">*</span>
+                  </label>
+                  <span className="text-[10px] font-mono text-brand-text-secondary opacity-60">{t('share.pillars.p3.field')}</span>
+                </div>
+                <textarea
+                  id="q3"
+                  rows={3}
+                  value={q3WhatTried}
+                  onChange={(e) => setQ3WhatTried(e.target.value)}
+                  placeholder={t('share.pillars.p3.placeholder')}
+                  className="w-full p-4 rounded-xl border border-brand-border dark:border-dark-border bg-brand-bg dark:bg-dark-bg text-brand-text-primary dark:text-dark-text-primary focus:ring-2 focus:ring-brand-accent dark:focus:ring-dark-accent outline-none font-light leading-relaxed resize-y"
+                  required
+                />
+                <p className="text-xs text-brand-text-secondary dark:text-dark-text-secondary italic">{t('share.pillars.p3.helper')}</p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="q4" className="text-xs font-bold uppercase tracking-widest text-brand-text-secondary dark:text-dark-text-secondary">
+                    {t('share.pillars.p4.label')} <span className="text-rose-500">*</span>
+                  </label>
+                  <span className="text-[10px] font-mono text-brand-text-secondary opacity-60">{t('share.pillars.p4.field')}</span>
+                </div>
+                <textarea
+                  id="q4"
+                  rows={3}
+                  value={q4WhatHappened}
+                  onChange={(e) => setQ4WhatHappened(e.target.value)}
+                  placeholder={t('share.pillars.p4.placeholder')}
+                  className="w-full p-4 rounded-xl border border-brand-border dark:border-dark-border bg-brand-bg dark:bg-dark-bg text-brand-text-primary dark:text-dark-text-primary focus:ring-2 focus:ring-brand-accent dark:focus:ring-dark-accent outline-none font-light leading-relaxed resize-y"
+                  required
+                />
+                <p className="text-xs text-brand-text-secondary dark:text-dark-text-secondary italic">{t('share.pillars.p4.helper')}</p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="q5" className="text-xs font-bold uppercase tracking-widest text-brand-text-secondary dark:text-dark-text-secondary">
+                    {t('share.pillars.p5.label')} <span className="text-rose-500">*</span>
+                  </label>
+                  <span className="text-[10px] font-mono text-brand-text-secondary opacity-60">{t('share.pillars.p5.field')}</span>
+                </div>
+                <textarea
+                  id="q5"
+                  rows={3}
+                  value={q5WhatLearned}
+                  onChange={(e) => setQ5WhatLearned(e.target.value)}
+                  placeholder={t('share.pillars.p5.placeholder')}
+                  className="w-full p-4 rounded-xl border border-brand-border dark:border-dark-border bg-brand-bg dark:bg-dark-bg text-brand-text-primary dark:text-dark-text-primary focus:ring-2 focus:ring-brand-accent dark:focus:ring-dark-accent outline-none font-light leading-relaxed resize-y"
+                  required
+                />
+                <p className="text-xs text-brand-text-secondary dark:text-dark-text-secondary italic">{t('share.pillars.p5.helper')}</p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="q6" className="text-xs font-bold uppercase tracking-widest text-brand-text-secondary dark:text-dark-text-secondary">
+                    {t('share.pillars.p6.label')}
+                  </label>
+                  <span className="text-[10px] font-mono text-brand-text-secondary opacity-60">{t('share.pillars.p6.field')}</span>
+                </div>
+                <textarea
+                  id="q6"
+                  rows={3}
+                  value={q6WhatDoDifferently}
+                  onChange={(e) => setQ6WhatDoDifferently(e.target.value)}
+                  placeholder={t('share.pillars.p6.placeholder')}
+                  className="w-full p-4 rounded-xl border border-brand-border dark:border-dark-border bg-brand-bg dark:bg-dark-bg text-brand-text-primary dark:text-dark-text-primary focus:ring-2 focus:ring-brand-accent dark:focus:ring-dark-accent outline-none font-light leading-relaxed resize-y"
+                />
+                <p className="text-xs text-brand-text-secondary dark:text-dark-text-secondary italic">{t('share.pillars.p6.helper')}</p>
+              </div>
             </div>
 
             {error && <p className="text-sm font-bold text-rose-500 italic">{error}</p>}

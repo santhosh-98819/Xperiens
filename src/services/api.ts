@@ -1,5 +1,5 @@
 import { auth } from '../lib/firebase';
-import { Experience, ProblemInput, SolutionAnalysis, PlatformStats, UserProfile, WritingAssistResponse, OutcomeFeedback, OutcomeNotification } from '../types';
+import { Experience, ProblemInput, SolutionAnalysis, PlatformStats, UserProfile, OutcomeFeedback, OutcomeNotification } from '../types';
 import { SEED_EXPERIENCES } from '../data/seedExperiences';
 
 const USER_STORAGE_KEY = 'xperiens_user';
@@ -7,7 +7,6 @@ const SAVED_SOLUTIONS_KEY = 'xperiens_saved_solutions';
 const SAVED_EXPERIENCES_KEY = 'xperiens_saved_experiences';
 const ACTIVE_SOLUTIONS_KEY = 'xperiens_active_solutions';
 const NOTIFICATIONS_STORAGE_KEY = 'xperiens_notifications';
-const AI_WRITING_ASSIST_KEY = 'xperiens_ai_writing_assist_enabled';
 
 async function getAuthHeaders(): Promise<Record<string, string>> {
   let user = auth.currentUser;
@@ -29,21 +28,6 @@ async function getAuthHeaders(): Promise<Record<string, string>> {
   }
 }
 
-export function getAiWritingAssistPreference(): boolean {
-  try {
-    const saved = localStorage.getItem(AI_WRITING_ASSIST_KEY);
-    if (saved !== null) {
-      return saved === 'true';
-    }
-  } catch (e) {}
-  return true; // Default ON as requested
-}
-
-export function setAiWritingAssistPreference(enabled: boolean) {
-  try {
-    localStorage.setItem(AI_WRITING_ASSIST_KEY, String(enabled));
-  } catch (e) {}
-}
 
 export function getLocalUser(): UserProfile {
   try {
@@ -653,34 +637,3 @@ export function saveActiveSolution(solution: SolutionAnalysis) {
   }
 }
 
-export async function assistWriting(
-  text: string,
-  fieldName?: string,
-  context?: string,
-  mode?: 'realtime' | 'polish' | 'concise' | 'professional' | 'grammar'
-): Promise<WritingAssistResponse> {
-  try {
-    if (!text || text.trim().length < 2) {
-      return { hasSuggestions: false, suggestions: [] };
-    }
-    const res = await fetch('/api/assist-writing', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        ...await getAuthHeaders()
-      },
-      body: JSON.stringify({ text, fieldName, context, mode: mode || 'realtime' }),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    return {
-      hasSuggestions: !!data.hasSuggestions,
-      suggestions: data.suggestions || [],
-      cleanText: data.cleanText,
-      analysisSummary: data.analysisSummary,
-    };
-  } catch (e) {
-    console.warn('Writing assist request error, falling back locally:', e);
-    return { hasSuggestions: false, suggestions: [] };
-  }
-}

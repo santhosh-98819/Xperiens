@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { SolutionAnalysis, OutcomeStatus } from '../types';
 import { reportOutcomeFeedback } from '../services/api';
-import { AiWritingField } from './AiWritingField';
 import confetti from 'canvas-confetti';
 import { X, CheckCircle2, Clock, XCircle, Send, Share2 } from 'lucide-react';
 
@@ -146,27 +145,31 @@ export const ReportOutcomeModal: React.FC<ReportOutcomeModalProps> = ({
             </div>
 
             <div className="space-y-6">
-              <AiWritingField
-                id="outcome-what-happened"
-                fieldName="Description"
-                label="02. What occurred?"
-                required
-                rows={3}
-                value={whatHappened}
-                onChange={setWhatHappened}
-                placeholder="Describe the real-world execution..."
-              />
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-brand-text-primary dark:text-dark-text-primary uppercase tracking-widest">02. What occurred? *</label>
+                <textarea
+                  rows={3}
+                  value={whatHappened}
+                  onChange={(e) => setWhatHappened(e.target.value)}
+                  placeholder="Describe the real-world execution..."
+                  className="w-full p-4 rounded-xl border border-brand-border dark:border-dark-border bg-brand-bg dark:bg-dark-sec-bg text-brand-text-primary dark:text-dark-text-primary outline-none focus:border-brand-accent text-sm leading-relaxed"
+                  required
+                />
+              </div>
 
-              <AiWritingField
-                id="outcome-what-learned"
-                fieldName="Key Lesson"
-                label="03. The primary lesson"
-                rows={2}
-                value={whatLearned}
-                onChange={setWhatLearned}
-                placeholder="What is the one thing others should know?"
-              />
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-brand-text-primary dark:text-dark-text-primary uppercase tracking-widest">03. The primary lesson</label>
+                <textarea
+                  rows={2}
+                  value={whatLearned}
+                  onChange={(e) => setWhatLearned(e.target.value)}
+                  placeholder="What is the one thing others should know?"
+                  className="w-full p-4 rounded-xl border border-brand-border dark:border-dark-border bg-brand-bg dark:bg-dark-sec-bg text-brand-text-primary dark:text-dark-text-primary outline-none focus:border-brand-accent text-sm leading-relaxed"
+                />
+              </div>
             </div>
+
+            {error && <p className="text-sm text-rose-600 font-semibold">{error}</p>}
 
             <div className="flex items-center justify-between pt-6 border-t border-brand-border dark:border-dark-border">
                <label className="flex items-center gap-3 cursor-pointer">

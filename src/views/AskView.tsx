@@ -8,8 +8,6 @@ import {
 } from '../types';
 import { analyzeProblem, fetchExperiences } from '../services/api';
 import { CATEGORY_TAXONOMY, ALL_CATEGORIES, CategoryMetadata } from '../data/categoryTaxonomy';
-import { AiWritingField } from '../components/AiWritingField';
-import { AiWritingAssistantBanner } from '../components/AiWritingAssistantBanner';
 import { useLanguage } from '../contexts/LanguageContext';
 import { ViewMode } from '../App';
 import {
@@ -225,29 +223,31 @@ export const AskView: React.FC<AskViewProps> = ({
         <div className="min-h-[400px]">
           {activeTab === 'form' && (
             <motion.form initial={{ opacity: 0 }} animate={{ opacity: 1 }} onSubmit={handleSubmit} className="space-y-10">
-              <AiWritingAssistantBanner />
-              
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                 <div className="space-y-8">
-                  <AiWritingField
-                    id="problem-textarea"
-                    fieldName="Situation"
-                    label={t('ask.dilemma_label')}
-                    required
-                    rows={4}
-                    value={problem}
-                    onChange={setProblem}
-                    placeholder={t('ask.dilemma_placeholder', 'Describe your current bottleneck in detail...')}
-                  />
-                  <AiWritingField
-                    id="context-textarea"
-                    fieldName="Context"
-                    label={t('ask.context_label')}
-                    rows={3}
-                    value={context}
-                    onChange={setContext}
-                    placeholder={t('ask.context_placeholder', 'What specific factors make this unique?')}
-                  />
+                  <div className="space-y-2">
+                    <label htmlFor="problem-textarea" className="text-xs font-bold text-brand-text-primary dark:text-dark-text-primary uppercase tracking-widest">{t('ask.dilemma_label')} *</label>
+                    <textarea
+                      id="problem-textarea"
+                      rows={4}
+                      value={problem}
+                      onChange={(e) => setProblem(e.target.value)}
+                      placeholder={t('ask.dilemma_placeholder', 'Describe your current bottleneck in detail...')}
+                      className="w-full p-4 rounded-xl border border-brand-border dark:border-dark-border bg-brand-card dark:bg-dark-card text-brand-text-primary dark:text-dark-text-primary outline-none focus:border-brand-accent text-sm leading-relaxed"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="context-textarea" className="text-xs font-bold text-brand-text-primary dark:text-dark-text-primary uppercase tracking-widest">{t('ask.context_label')}</label>
+                    <textarea
+                      id="context-textarea"
+                      rows={3}
+                      value={context}
+                      onChange={(e) => setContext(e.target.value)}
+                      placeholder={t('ask.context_placeholder', 'What specific factors make this unique?')}
+                      className="w-full p-4 rounded-xl border border-brand-border dark:border-dark-border bg-brand-card dark:bg-dark-card text-brand-text-primary dark:text-dark-text-primary outline-none focus:border-brand-accent text-sm leading-relaxed"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-8">

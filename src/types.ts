@@ -212,30 +212,10 @@ export interface UserProfile {
   savedSolutionIds: string[];
   savedExperienceIds?: string[];
   notificationPreferences?: NotificationPreferences;
-  aiWritingAssistEnabled?: boolean;
   onboardingCompleted: boolean;
   legalAcceptance?: LegalAcceptance;
 }
 
-export type WritingSuggestionType = 'typo_grammar' | 'alternative_wording' | 'clarity' | 'concise' | 'professional';
-
-export type WritingAssistMode = 'realtime' | 'polish' | 'concise' | 'professional' | 'grammar';
-
-export interface WritingSuggestion {
-  id: string;
-  type: WritingSuggestionType;
-  original: string;
-  suggested: string;
-  reason: string;
-  confidence?: number;
-}
-
-export interface WritingAssistResponse {
-  hasSuggestions: boolean;
-  suggestions: WritingSuggestion[];
-  cleanText?: string;
-  analysisSummary?: string;
-}
 
 export interface PlatformStats {
   totalRealExperiences: number;
