@@ -219,6 +219,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         (customErr as any).code = err.code;
         throw customErr;
       }
+      if (err.code === 'auth/unauthorized-domain') {
+        const currentDomain = typeof window !== 'undefined' ? window.location.hostname : 'this domain';
+        const customErr = new Error(
+          `Unauthorized Domain: "${currentDomain}" is not in the Authorized Domains list for Firebase project "${auth.app.options.projectId}". Please add "${currentDomain}" in Firebase Console > Authentication > Settings > Authorized domains.`
+        );
+        (customErr as any).code = err.code;
+        throw customErr;
+      }
       throw err;
     }
   };

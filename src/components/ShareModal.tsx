@@ -133,19 +133,59 @@ export const ShareModal: React.FC<ShareModalProps> = ({
               <label className="text-[10px] font-bold text-brand-text-secondary dark:text-dark-text-secondary uppercase tracking-widest">Instant Share</label>
               <div className="grid grid-cols-3 gap-3">
                  {[
-                   { id: 'whatsapp', icon: MessageCircle, label: 'WhatsApp', color: 'text-emerald-600' },
-                   { id: 'linkedin', icon: Linkedin, label: 'LinkedIn', color: 'text-sky-600' },
-                   { id: 'twitter', icon: Twitter, label: 'Twitter', color: 'text-slate-900 dark:text-white' }
-                 ].map(social => (
-                   <button
+                   {
+                     id: 'whatsapp',
+                     icon: MessageCircle,
+                     label: 'WhatsApp',
+                     color: 'text-emerald-600',
+                     url: `https://api.whatsapp.com/send?text=${encodeURIComponent(`"${title}" - Read this on Xperiens:\n${currentUrl}`)}`,
+                   },
+                   {
+                     id: 'linkedin',
+                     icon: Linkedin,
+                     label: 'LinkedIn',
+                     color: 'text-sky-600',
+                     url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`,
+                   },
+                   {
+                     id: 'twitter',
+                     icon: Twitter,
+                     label: 'Twitter',
+                     color: 'text-slate-900 dark:text-white',
+                     url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out "${title}" on Xperiens:`)}&url=${encodeURIComponent(currentUrl)}`,
+                   },
+                 ].map((social) => (
+                   <a
                      key={social.id}
-                     className="p-4 rounded-xl border border-brand-border dark:border-dark-border bg-brand-card dark:bg-dark-card hover:bg-slate-50 dark:hover:bg-dark-sec-bg transition-all flex flex-col items-center gap-2"
+                     href={social.url}
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     className="p-4 rounded-xl border border-brand-border dark:border-dark-border bg-brand-card dark:bg-dark-card hover:bg-slate-50 dark:hover:bg-dark-sec-bg hover:border-brand-accent dark:hover:border-dark-accent transition-all flex flex-col items-center gap-2 group cursor-pointer"
                    >
-                     <social.icon className={`w-5 h-5 ${social.color}`} />
-                     <span className="text-[10px] font-bold uppercase tracking-widest">{social.label}</span>
-                   </button>
+                     <social.icon className={`w-5 h-5 ${social.color} group-hover:scale-110 transition-transform`} />
+                     <span className="text-[10px] font-bold uppercase tracking-widest text-brand-text-primary dark:text-dark-text-primary">{social.label}</span>
+                   </a>
                  ))}
               </div>
+
+              {typeof navigator !== 'undefined' && 'share' in navigator && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator
+                      .share({
+                        title: title,
+                        text: `Check out "${title}" on Xperiens`,
+                        url: currentUrl,
+                      })
+                      .catch(() => {});
+                  }}
+                  className="w-full mt-2 py-3 px-4 rounded-xl border border-brand-accent/40 dark:border-dark-accent/40 bg-brand-accent/5 dark:bg-dark-accent/5 text-brand-accent dark:text-dark-accent font-bold text-xs flex items-center justify-center gap-2 hover:bg-brand-accent/10 transition-colors"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span>More Sharing Options</span>
+                </button>
+              )}
            </div>
         </div>
 
