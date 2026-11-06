@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { SolutionAnalysis } from '../types';
-import { getLocalSavedSolutions, getLocalActiveSolutions, saveSolutionLocally, isSolutionSaved } from '../services/api';
+import { getLocalSavedSolutions, getLocalActiveSolutions, saveSolutionLocally } from '../services/api';
 import { ReportOutcomeModal } from '../components/ReportOutcomeModal';
-import { Tooltip } from '../components/Tooltip';
 import {
   CheckSquare,
   Bookmark,
   BookmarkCheck,
   Sparkles,
   ArrowRight,
-  Clock,
   CheckCircle2,
-  AlertCircle,
   PlayCircle,
-  HelpCircle,
 } from 'lucide-react';
 import { ViewMode } from '../App';
 
@@ -44,7 +40,6 @@ export const MySolutionsView: React.FC<MySolutionsViewProps> = ({
 
   const savedIds = new Set(savedSolutions.map((s) => s.id));
 
-  // Merge unique
   const allMap = new Map<string, SolutionAnalysis>();
   savedSolutions.forEach((s) => {
     allMap.set(s.id, {
@@ -67,12 +62,6 @@ export const MySolutionsView: React.FC<MySolutionsViewProps> = ({
   });
   const allList = Array.from(allMap.values());
 
-  const completedCount = allList.filter((s) => s.status === 'completed' || !!s.outcomeReport).length;
-  const savedCount = allList.filter((s) => savedIds.has(s.id) || s.status === 'saved').length;
-  const testingCount = allList.filter(
-    (s) => (s.status === 'testing' || s.status === 'in_progress' || !s.status) && s.status !== 'completed' && !s.outcomeReport
-  ).length;
-
   const filteredList = allList.filter((s) => {
     const isCompleted = s.status === 'completed' || !!s.outcomeReport;
     const isSaved = savedIds.has(s.id) || s.status === 'saved';
@@ -91,85 +80,64 @@ export const MySolutionsView: React.FC<MySolutionsViewProps> = ({
   };
 
   return (
-    <div className="max-w-5xl mx-auto py-6 sm:py-10 space-y-8 animate-fadeIn pb-16">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200/80 dark:border-slate-800 pb-6">
-        <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-900/50 mb-2">
-            <CheckSquare className="w-3.5 h-3.5" />
-            <span>ACTION & OUTCOME TRACKER</span>
-          </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            My Solutions
-          </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-            Track strategies you are testing, review personalized recommendations, and record outcomes.
-          </p>
+    <div className="max-w-6xl mx-auto py-12 sm:py-16 px-6 space-y-12 animate-fadeIn pb-24">
+      {/* Editorial Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-brand-border dark:border-dark-border pb-10">
+        <div className="space-y-4">
+           <div className="text-xs font-bold text-brand-accent dark:text-dark-accent uppercase tracking-widest flex items-center gap-2">
+              <CheckSquare className="w-4 h-4" />
+              <span>Inquiry Tracking</span>
+           </div>
+           <h1 className="text-4xl font-serif font-bold text-brand-text-primary dark:text-dark-text-primary tracking-tight">
+             My Insights
+           </h1>
+           <p className="text-lg text-brand-text-secondary dark:text-dark-text-secondary font-light max-w-xl">
+             Review synthesized recommendations, track ongoing trials, and record outcomes to refine future reasoning.
+           </p>
         </div>
 
-        <Tooltip content="Submit a new challenge to generate another tailored recommendation" position="left">
-          <button
-            id="ask-new-problem-btn"
-            onClick={() => onNavigate('ask')}
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-white bg-slate-900 hover:bg-indigo-700 shadow-sm transition-all flex-shrink-0 cursor-pointer"
-          >
-            <Sparkles className="w-4 h-4 text-emerald-300" />
-            <span>Ask New Situation</span>
-          </button>
-        </Tooltip>
+        <button
+          onClick={() => onNavigate('ask')}
+          className="w-full md:w-auto px-8 py-3 bg-brand-text-primary dark:bg-dark-text-primary text-brand-bg dark:text-dark-bg rounded-lg font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all flex items-center justify-center gap-2 shadow-lg"
+        >
+          <Sparkles className="w-4 h-4" />
+          <span>New Situation</span>
+        </button>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 text-xs font-medium pb-2 overflow-x-auto">
+      {/* Tabs */}
+      <div className="flex items-center gap-8 border-b border-brand-border dark:border-dark-border pb-px overflow-x-auto scrollbar-hide">
         {[
-          { id: 'all', label: `All Solutions (${allList.length})` },
-          {
-            id: 'testing',
-            label: `In Progress / Testing (${testingCount})`,
-          },
-          {
-            id: 'completed',
-            label: `Completed (${completedCount})`,
-          },
-          { id: 'saved', label: `Saved (${savedCount})` },
+          { id: 'all', label: `All Plans (${allList.length})` },
+          { id: 'testing', label: `In Testing` },
+          { id: 'completed', label: `Completed` },
+          { id: 'saved', label: `Bookmarked` },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap cursor-pointer ${
+            className={`pb-4 text-xs font-bold uppercase tracking-widest transition-all relative whitespace-nowrap ${
               activeTab === tab.id
-                ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+                ? 'text-brand-accent dark:text-dark-accent'
+                : 'text-brand-text-secondary dark:text-dark-text-secondary hover:text-brand-text-primary dark:hover:text-dark-text-primary'
             }`}
           >
-            {tab.label}
+            <span>{tab.label}</span>
+            {activeTab === tab.id && (
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-accent dark:bg-dark-accent" />
+            )}
           </button>
         ))}
       </div>
 
-      {/* Solutions List */}
+      {/* Content */}
       {filteredList.length === 0 ? (
-        <div className="p-12 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-center space-y-4 shadow-2xs">
-          <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto">
-            <CheckSquare className="w-6 h-6" />
-          </div>
-          <div className="space-y-1">
-            <h3 className="text-base font-semibold text-slate-800 dark:text-slate-100">
-              No solutions in this tab
-            </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-              Submit a problem to generate an experience-based plan, bookmark recommendations, or report outcomes.
-            </p>
-          </div>
-          <button
-            onClick={() => onNavigate('ask')}
-            className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 shadow-2xs cursor-pointer"
-          >
-            Diagnose a Problem Now
-          </button>
+        <div className="py-24 text-center border border-dashed border-brand-border dark:border-dark-border rounded-2xl space-y-6">
+           <p className="text-brand-text-secondary dark:text-dark-text-secondary font-light">No plans found in this section.</p>
+           <button onClick={() => onNavigate('ask')} className="text-xs font-bold text-brand-accent dark:text-dark-accent hover:underline uppercase tracking-widest">Diagnose Situation</button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-6">
           {filteredList.map((sol) => {
             const isCompleted = sol.status === 'completed' || !!sol.outcomeReport;
             const isSaved = savedIds.has(sol.id) || sol.status === 'saved';
@@ -178,104 +146,63 @@ export const MySolutionsView: React.FC<MySolutionsViewProps> = ({
             return (
               <div
                 key={sol.id}
-                id={`solution-row-${sol.id}`}
-                className="p-5 sm:p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 hover:border-indigo-300 hover:shadow-2xs transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
+                className="group p-8 bg-brand-card dark:bg-dark-card border border-brand-border dark:border-dark-border rounded-xl hover:border-brand-accent dark:hover:border-dark-accent transition-all flex flex-col md:flex-row md:items-center justify-between gap-8"
               >
-                <div className="space-y-2 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                      {sol.originalProblem.category}
-                    </span>
+                <div className="space-y-4 flex-1">
+                   <div className="flex flex-wrap items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-brand-text-secondary dark:text-dark-text-secondary">
+                      <span className="text-brand-text-primary dark:text-dark-text-primary">{sol.originalProblem.category}</span>
+                      <span aria-hidden="true">·</span>
+                      {isCompleted ? (
+                        <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3" /> Resolved</span>
+                      ) : isTesting ? (
+                        <span className="text-brand-accent dark:text-dark-accent flex items-center gap-1.5"><PlayCircle className="w-3 h-3" /> In Testing</span>
+                      ) : (
+                        <span className="flex items-center gap-1.5"><Bookmark className="w-3 h-3" /> Saved</span>
+                      )}
+                      <span aria-hidden="true">·</span>
+                      <span>{new Date(sol.createdAt).toLocaleDateString()}</span>
+                   </div>
 
-                    {isCompleted ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-                        Completed & Reported
-                      </span>
-                    ) : isTesting ? (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-                        <PlayCircle className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
-                        In Progress / Testing
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-                        <Bookmark className="w-3 h-3" />
-                        Saved
-                      </span>
-                    )}
+                   <h3 className="text-xl font-serif font-bold text-brand-text-primary dark:text-dark-text-primary group-hover:text-brand-accent dark:group-hover:text-dark-accent transition-colors">
+                     {sol.originalProblem.problem}
+                   </h3>
 
-                    <span className="text-xs text-slate-400 dark:text-slate-500">
-                      {new Date(sol.createdAt).toLocaleDateString(undefined, {
-                        month: 'short',
-                        day: 'numeric',
-                      })}
-                    </span>
-                  </div>
+                   <div className="flex items-center gap-6 text-xs font-medium text-brand-text-secondary dark:text-dark-text-secondary">
+                      <span>{sol.recommendationSteps.length} Step Plan</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{sol.evidence.confidencePercentage}% Confidence</span>
+                   </div>
 
-                  <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-                    {sol.originalProblem.problem}
-                  </h3>
-
-                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
-                    {sol.problemSummary}
-                  </p>
-
-                  <div className="text-xs text-indigo-700 dark:text-indigo-400 font-medium flex items-center gap-2">
-                    <span>
-                      {sol.recommendationSteps.length} Step Plan
-                    </span>
-                    <span>•</span>
-                    <span>
-                      Based on {sol.relevantExperiences.length} peer experiences ({sol.evidence.confidencePercentage}% confidence)
-                    </span>
-                  </div>
-
-                  {sol.outcomeReport && (
-                    <div className="p-2.5 rounded-lg bg-emerald-50/70 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-900 text-xs text-emerald-900 dark:text-emerald-100 mt-2">
-                      <strong className="block mb-0.5">Your Reported Outcome ({sol.outcomeReport.result.toUpperCase()}):</strong>
-                      <p className="italic">"{sol.outcomeReport.whatHappened}"</p>
-                    </div>
-                  )}
+                   {sol.outcomeReport && (
+                      <div className="p-4 bg-brand-bg dark:bg-dark-sec-bg border border-brand-border dark:border-dark-border rounded-lg text-xs leading-relaxed italic opacity-80">
+                         "{sol.outcomeReport.whatHappened}"
+                      </div>
+                   )}
                 </div>
 
-                {/* Actions */}
-                <div className="flex flex-row md:flex-col items-center md:items-end gap-2 flex-shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-slate-100">
-                  <div className="flex items-center gap-2">
-                    <Tooltip content={isSaved ? "Remove from saved bookmarks" : "Save this plan"} position="top">
-                      <button
-                        onClick={(e) => handleToggleSave(sol, e)}
-                        className={`p-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer border ${
-                          isSaved
-                            ? 'bg-indigo-50 text-indigo-700 border-indigo-300'
-                            : 'bg-white text-slate-500 hover:text-slate-800 border-slate-200'
-                        }`}
-                      >
-                        {isSaved ? <BookmarkCheck className="w-4 h-4 text-indigo-600" /> : <Bookmark className="w-4 h-4" />}
-                      </button>
-                    </Tooltip>
-
-                    <button
-                      onClick={() => onSelectSolution(sol)}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-900 bg-slate-100 hover:bg-slate-200 transition-colors cursor-pointer"
-                    >
-                      <span>View Plan</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                  <Tooltip content={isCompleted ? "Update your reported outcome" : "Record what happened when you tried this solution"} position="left">
-                    <button
-                      onClick={() => setSelectedForOutcome(sol)}
-                      className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
-                        isCompleted
-                          ? 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200'
-                          : 'text-white bg-indigo-600 hover:bg-indigo-700 shadow-2xs'
-                      }`}
-                    >
-                      <CheckSquare className="w-3.5 h-3.5" />
-                      <span>{isCompleted ? 'Update Outcome' : 'Report Outcome'}</span>
-                    </button>
-                  </Tooltip>
+                <div className="flex items-center gap-3">
+                   <button
+                     onClick={(e) => handleToggleSave(sol, e)}
+                     className={`p-3 rounded-lg border transition-all ${
+                       isSaved ? 'bg-brand-accent dark:bg-dark-accent text-white border-brand-accent' : 'border-brand-border dark:border-dark-border text-brand-text-secondary hover:text-brand-text-primary'
+                     }`}
+                   >
+                     {isSaved ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
+                   </button>
+                   <button
+                     onClick={() => onSelectSolution(sol)}
+                     className="px-6 py-3 border border-brand-text-primary dark:border-dark-text-primary rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-brand-text-primary dark:hover:bg-dark-text-primary hover:text-brand-bg dark:hover:text-dark-bg transition-all flex items-center gap-2"
+                   >
+                     Review Plan <ArrowRight className="w-4 h-4" />
+                   </button>
+                   <button
+                     onClick={() => setSelectedForOutcome(sol)}
+                     className={`px-6 py-3 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${
+                       isCompleted ? 'bg-emerald-600 text-white' : 'bg-brand-text-primary dark:bg-dark-text-primary text-brand-bg dark:text-dark-bg'
+                     }`}
+                   >
+                     {isCompleted ? 'Outcome Logged' : 'Log Trial'}
+                   </button>
                 </div>
               </div>
             );
@@ -283,7 +210,6 @@ export const MySolutionsView: React.FC<MySolutionsViewProps> = ({
         </div>
       )}
 
-      {/* Outcome Modal */}
       {selectedForOutcome && (
         <ReportOutcomeModal
           solution={selectedForOutcome}

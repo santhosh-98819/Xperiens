@@ -2,25 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { UserProfile, PlatformStats, SolutionAnalysis } from '../types';
 import { fetchPlatformStats, getLocalSavedSolutions, getLocalActiveSolutions, getLocalUser } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
-import { Tooltip } from '../components/Tooltip';
 import {
   LayoutDashboard,
   Sparkles,
-  User,
   Heart,
   CheckCircle2,
-  Bookmark,
-  Share2,
   ArrowRight,
-  TrendingUp,
   Brain,
   Compass,
-  CheckSquare,
-  HelpCircle,
   Camera,
-  Award,
 } from 'lucide-react';
-import { motion } from 'motion/react';
 import { ViewMode } from '../App';
 
 interface DashboardViewProps {
@@ -77,255 +68,184 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const completedSolutions = allSolutions.filter((s) => s.status === 'completed' || !!s.outcomeReport);
 
   return (
-    <div className="max-w-6xl mx-auto py-6 sm:py-10 space-y-8 animate-fadeIn pb-16">
-      {/* ========================================================
-          GREETING BANNER WITH PROFILE BANNER THEME
-         ======================================================== */}
-      <div className="relative overflow-hidden rounded-3xl shadow-lg border border-slate-200/80 dark:border-slate-800 text-white min-h-[220px] flex flex-col justify-between">
-        {/* Banner Background (Image or Dynamic Theme Gradient) */}
+    <div className="max-w-6xl mx-auto py-8 sm:py-12 px-6 space-y-12 animate-fadeIn pb-24">
+      {/* Header Section */}
+      <div className="relative overflow-hidden rounded-2xl border border-brand-border dark:border-dark-border bg-brand-card dark:bg-dark-card min-h-[280px] flex flex-col justify-end">
         {bannerURL ? (
           <div className="absolute inset-0 z-0">
             <img
               src={bannerURL}
-              alt="Profile Banner Theme"
+              alt="Profile Banner"
               referrerPolicy="no-referrer"
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover"
             />
-            {/* Cinematic Multilayer Dark Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/75 to-indigo-950/85 backdrop-blur-[0.5px]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-dark-bg/90 via-dark-bg/40 to-transparent" />
           </div>
         ) : (
-          <div className="absolute inset-0 z-0 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900">
-            <div className="absolute -top-24 -right-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl" />
-            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl" />
+          <div className="absolute inset-0 z-0 bg-slate-900">
+             <div className="absolute inset-0 bg-linear-to-br from-indigo-900/40 to-slate-900" />
           </div>
         )}
 
-        {/* Content Container */}
-        <div className="relative z-10 p-6 sm:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div className="flex items-start sm:items-center gap-4 sm:gap-5">
-            {/* Avatar with Ring */}
-            <div className="relative flex-shrink-0">
+        <div className="relative z-10 p-8 sm:p-12 flex flex-col md:flex-row md:items-end justify-between gap-8">
+          <div className="flex items-center gap-6">
+            <div className="shrink-0">
               {photoURL ? (
                 <img
                   src={photoURL}
                   alt={displayName}
                   referrerPolicy="no-referrer"
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-white/80 shadow-md"
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border-2 border-white dark:border-dark-border shadow-lg"
                 />
               ) : (
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 text-white flex items-center justify-center font-black text-2xl border-2 border-white/80 shadow-md">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-dark-accent text-white flex items-center justify-center font-serif text-3xl border-2 border-white dark:border-dark-border shadow-lg">
                   {initialLetter}
                 </div>
               )}
-              <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-slate-900 shadow-2xs" />
             </div>
-
-            {/* Title & Greeting Info */}
-            <div className="space-y-1.5">
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 backdrop-blur-xs">
-                  <LayoutDashboard className="w-3 h-3 text-indigo-300" />
-                  <span>DECISION DASHBOARD</span>
-                </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 text-white/70 text-xs font-medium tracking-wide uppercase">
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                <span>Dashboard</span>
                 {activeUser.role && (
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/15 text-white/90 font-medium backdrop-blur-xs">
-                    {activeUser.role}
-                  </span>
+                   <>
+                    <span aria-hidden="true">·</span>
+                    <span>{activeUser.role}</span>
+                   </>
                 )}
               </div>
-
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white drop-shadow-xs">
+              <h1 className="text-3xl sm:text-4xl font-serif font-bold text-white leading-tight">
                 {getGreeting()}, {displayName}
               </h1>
-
-              <p className="text-xs sm:text-sm text-slate-200/90 max-w-xl leading-relaxed">
-                {activeUser.bio || "What's on your mind today? Check your active problem test loops or explore real peer cases."}
+              <p className="text-sm sm:text-base text-white/80 max-w-lg leading-relaxed font-light">
+                {activeUser.bio || "What's on your mind today? Check your active tracks or explore collective wisdom."}
               </p>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 flex-shrink-0 pt-2 lg:pt-0">
-            <Tooltip content="Diagnose a new situation with human cases + AI synthesis" position="bottom">
-              <button
-                id="dash-ask-btn"
-                onClick={() => onNavigate('ask')}
-                className="inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-slate-950 bg-emerald-400 hover:bg-emerald-300 shadow-md transition-all cursor-pointer hover:scale-102"
-              >
-                <Sparkles className="w-4 h-4 text-slate-950" />
-                <span>Ask Xperiens</span>
-              </button>
-            </Tooltip>
-
-            <Tooltip content="Contribute a solution trial or life lesson to the repository" position="bottom">
-              <button
-                id="dash-share-exp-btn"
-                onClick={() => onNavigate('share-experience')}
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 sm:py-3 rounded-xl font-semibold text-xs sm:text-sm text-white bg-white/15 hover:bg-white/25 border border-white/20 backdrop-blur-xs transition-all cursor-pointer"
-              >
-                <span>Share Learning</span>
-              </button>
-            </Tooltip>
-
-            <Tooltip content="Customize your banner theme, avatar, and bio" position="bottom">
-              <button
-                id="dash-edit-banner-btn"
-                onClick={() => onNavigate('profile')}
-                className="p-2.5 sm:p-3 rounded-xl text-white/80 hover:text-white bg-white/10 hover:bg-white/20 border border-white/15 backdrop-blur-xs transition-all cursor-pointer"
-                title="Change Banner Theme"
-                aria-label="Change profile banner theme"
-              >
-                <Camera className="w-4 h-4" />
-              </button>
-            </Tooltip>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => onNavigate('ask')}
+              className="px-6 py-3 bg-brand-accent dark:bg-dark-accent text-white rounded-lg text-sm font-semibold hover:opacity-90 transition-all flex items-center gap-2 shadow-sm"
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>Ask Xperiens</span>
+            </button>
+            <button
+              onClick={() => onNavigate('profile')}
+              className="p-3 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-lg hover:bg-white/20 transition-all"
+              aria-label="Edit Banner"
+            >
+              <Camera className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>
 
-      {/* User Impact & Statistics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Active Problems */}
-        <Tooltip content="View all decisions currently being tested or tracked" position="top">
-          <div
-            onClick={() => onNavigate('solutions')}
-            className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-2xs transition-all cursor-pointer space-y-2 h-full"
-          >
-            <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
-              <span>Active Problems</span>
-              <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                <Brain className="w-4 h-4" />
+      {/* Impact Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[
+          {
+            label: 'Active Tracks',
+            value: activeSolutions.length,
+            sub: `${activeSolutions.filter((s) => s.status === 'testing').length} in progress`,
+            icon: Brain,
+            color: 'text-indigo-600 dark:text-indigo-400',
+            bg: 'bg-indigo-50 dark:bg-indigo-950/30'
+          },
+          {
+            label: 'Outcomes Logged',
+            value: completedSolutions.length,
+            sub: 'Trials recorded',
+            icon: CheckCircle2,
+            color: 'text-emerald-600 dark:text-emerald-400',
+            bg: 'bg-emerald-50 dark:bg-emerald-950/30'
+          },
+          {
+            label: 'Experiences Shared',
+            value: activeUser.experiencesShared || 0,
+            sub: 'Community contributions',
+            icon: Compass,
+            color: 'text-sky-600 dark:text-sky-400',
+            bg: 'bg-sky-50 dark:bg-sky-950/30'
+          },
+          {
+            label: 'Community Impact',
+            value: activeUser.peopleHelped || 0,
+            sub: 'Peers helped',
+            icon: Heart,
+            color: 'text-rose-600 dark:text-rose-400',
+            bg: 'bg-rose-50 dark:bg-rose-950/30'
+          }
+        ].map((stat, i) => (
+          <div key={i} className="p-6 rounded-xl border border-brand-border dark:border-dark-border bg-brand-card dark:bg-dark-card space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-brand-text-secondary dark:text-dark-text-secondary uppercase tracking-wider">{stat.label}</span>
+              <div className={`p-2 rounded-lg ${stat.bg} ${stat.color}`}>
+                <stat.icon className="w-4 h-4" />
               </div>
             </div>
-            <div className="text-2xl font-black text-slate-900 dark:text-white">
-              {activeSolutions.length}
+            <div className="space-y-1">
+              <div className="text-3xl font-serif font-bold text-brand-text-primary dark:text-dark-text-primary">{stat.value}</div>
+              <div className="text-xs text-brand-text-secondary dark:text-dark-text-secondary">{stat.sub}</div>
             </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              {activeSolutions.filter((s) => s.status === 'testing').length} in active testing
-            </p>
           </div>
-        </Tooltip>
-
-        {/* Card 2: Solutions Tested & Completed */}
-        <Tooltip content="Plans where you have tested and reported outcomes" position="top">
-          <div
-            onClick={() => onNavigate('solutions')}
-            className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-2xs transition-all cursor-pointer space-y-2 h-full"
-          >
-            <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
-              <span>Completed Solutions</span>
-              <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                <CheckCircle2 className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="text-2xl font-black text-emerald-900 dark:text-emerald-400">
-              {completedSolutions.length}
-            </div>
-            <p className="text-[11px] text-emerald-700 dark:text-emerald-300">
-              Outcomes recorded in repository
-            </p>
-          </div>
-        </Tooltip>
-
-        {/* Card 3: Experiences Shared */}
-        <Tooltip content="Number of real-world experiences contributed to the community" position="top">
-          <div
-            onClick={() => onNavigate('experiences')}
-            className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 hover:border-sky-300 dark:hover:border-sky-700 hover:shadow-2xs transition-all cursor-pointer space-y-2 h-full"
-          >
-            <div className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400">
-              <span>Experiences Shared</span>
-              <div className="w-7 h-7 rounded-lg bg-sky-50 dark:bg-sky-950/80 text-sky-600 dark:text-sky-400 flex items-center justify-center">
-                <Compass className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="text-2xl font-black text-slate-900 dark:text-white">
-              {activeUser.experiencesShared || 0}
-            </div>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              Contributing to collective intelligence
-            </p>
-          </div>
-        </Tooltip>
-
-        {/* Card 4: People Helped */}
-        <Tooltip content="Estimated users who have referenced your submitted experiences" position="top">
-          <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-50/50 to-emerald-50/30 dark:from-indigo-950/30 dark:to-emerald-950/20 border border-indigo-200/70 dark:border-indigo-800/60 space-y-2 h-full">
-            <div className="flex items-center justify-between text-xs font-semibold text-indigo-900 dark:text-indigo-300">
-              <span>Community Impact</span>
-              <div className="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
-                <Heart className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="text-2xl font-black text-slate-900 dark:text-white">
-              {activeUser.peopleHelped > 0 ? activeUser.peopleHelped : 0}
-            </div>
-            <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium">
-              {activeUser.peopleHelped > 0
-                ? `Your experiences have helped ${activeUser.peopleHelped} people.`
-                : 'Share an experience to help community peers.'}
-            </p>
-          </div>
-        </Tooltip>
+        ))}
       </div>
 
-      {/* Main Grid: Active Solutions & Platform Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left: Active Solutions & Recent Tracks */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        {/* Left: Active Strategy Plans */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between border-b border-brand-border dark:border-dark-border pb-4">
+            <h2 className="text-xl font-serif font-bold text-brand-text-primary dark:text-dark-text-primary">
               Active Strategy Plans
             </h2>
             <button
               onClick={() => onNavigate('solutions')}
-              className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 flex items-center gap-1 cursor-pointer"
+              className="text-sm font-semibold text-brand-accent dark:text-dark-accent hover:underline flex items-center gap-1 transition-all"
             >
               <span>View All</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 
           {activeSolutions.length === 0 ? (
-            <div className="p-8 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-center space-y-3 shadow-2xs">
-              <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">
-                You haven't submitted any problems yet.
+            <div className="p-12 border border-dashed border-brand-border dark:border-dark-border rounded-xl text-center space-y-4">
+              <p className="text-sm text-brand-text-secondary dark:text-dark-text-secondary">
+                No active strategy plans found. Start by asking a question.
               </p>
               <button
                 onClick={() => onNavigate('ask')}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-slate-900 dark:bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-500 cursor-pointer"
+                className="px-6 py-2 bg-brand-text-primary dark:bg-dark-text-primary text-brand-bg dark:text-dark-bg rounded-lg text-sm font-bold hover:opacity-90"
               >
                 Ask Xperiens
               </button>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {activeSolutions.slice(0, 3).map((sol) => (
                 <div
                   key={sol.id}
                   onClick={() => onSelectSolution(sol)}
-                  className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-xs transition-all cursor-pointer flex items-center justify-between gap-4"
+                  className="group p-6 rounded-xl border border-brand-border dark:border-dark-border bg-brand-card dark:bg-dark-card hover:border-brand-accent dark:hover:border-dark-accent transition-all cursor-pointer flex items-center justify-between gap-6"
                 >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                        {sol.originalProblem.category}
-                      </span>
-                      <span className="text-xs text-slate-400">
-                        {new Date(sol.createdAt).toLocaleDateString(undefined, {
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </span>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-xs text-brand-text-secondary dark:text-dark-text-secondary">
+                      <span className="font-semibold text-brand-text-primary dark:text-dark-text-primary">{sol.originalProblem.category}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{new Date(sol.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                     </div>
-                    <h3 className="text-sm font-semibold text-slate-900 dark:text-white line-clamp-1">
+                    <h3 className="text-lg font-serif font-bold text-brand-text-primary dark:text-dark-text-primary group-hover:text-brand-accent dark:group-hover:text-dark-accent transition-colors line-clamp-1">
                       {sol.originalProblem.problem}
                     </h3>
-                    <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
-                      {sol.recommendationSteps.length} Steps • {sol.evidence.confidencePercentage}% Evidence Confidence
-                    </p>
+                    <div className="flex items-center gap-4 text-xs font-medium text-brand-accent dark:text-dark-accent">
+                      <span>{sol.recommendationSteps.length} Steps</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{sol.evidence.confidencePercentage}% Confidence</span>
+                    </div>
                   </div>
-                  <ArrowRight className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  <ArrowRight className="w-5 h-5 text-brand-border dark:text-dark-border group-hover:text-brand-accent dark:group-hover:text-dark-accent transition-all" />
                 </div>
               ))}
             </div>
@@ -333,79 +253,53 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         {/* Right: Platform Health & Collective Insights */}
-        <div className="space-y-4">
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
-            Collective Knowledge Pool
-          </h2>
-
-          <div className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-4 shadow-2xs">
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400 font-medium">Real Community Cases:</span>
-                <span className="font-bold text-slate-900 dark:text-white">
-                  {platformStats ? platformStats.totalRealExperiences : 0} verified
-                </span>
+        <div className="space-y-8">
+          <div className="space-y-6">
+             <h2 className="text-xl font-serif font-bold text-brand-text-primary dark:text-dark-text-primary border-b border-brand-border dark:border-dark-border pb-4">
+              Collective Pool
+            </h2>
+            
+            <div className="p-8 rounded-xl bg-brand-text-primary dark:bg-dark-text-primary text-brand-bg dark:text-dark-bg space-y-6">
+              <div className="space-y-4">
+                 {[
+                  { label: 'Verified Cases', value: platformStats?.totalRealExperiences || 0 },
+                  { label: 'Outcomes Reported', value: platformStats?.totalOutcomesReported || 0 },
+                  { label: 'Contributors', value: platformStats?.communityContributors || 0 },
+                  { label: 'Success Rate', value: platformStats && platformStats.totalOutcomesReported > 0 ? `${platformStats.successfulSolutionsRatio}%` : '—' }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center justify-between border-b border-white/10 pb-3">
+                    <span className="text-xs font-medium opacity-70">{item.label}</span>
+                    <span className="text-sm font-serif font-bold">{item.value}</span>
+                  </div>
+                ))}
               </div>
 
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400 font-medium">Reported Outcomes:</span>
-                <span className="font-bold text-slate-900 dark:text-white">
-                  {platformStats ? platformStats.totalOutcomesReported : 0} trials
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400 font-medium">Community Contributors:</span>
-                <span className="font-bold text-slate-900 dark:text-white">
-                  {platformStats ? platformStats.communityContributors : 0} people
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400 font-medium">Demo Reference Records:</span>
-                <span className="font-bold text-amber-800 dark:text-amber-400">
-                  {platformStats ? platformStats.totalDemoExperiences : 0} demo cases
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-slate-500 dark:text-slate-400 font-medium">Outcome Success Rate:</span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                  {platformStats && platformStats.totalOutcomesReported > 0
-                    ? `${platformStats.successfulSolutionsRatio}% positive`
-                    : 'Awaiting 1st trial'}
-                </span>
+              <div className="space-y-3">
+                <p className="text-xs leading-relaxed opacity-80 font-light">
+                  Every outcome logged refines our collective intelligence, making solutions smarter for the next person.
+                </p>
+                <button
+                  onClick={() => onNavigate('share-experience')}
+                  className="w-full py-3 bg-white dark:bg-dark-bg text-brand-text-primary dark:text-dark-text-primary rounded-lg text-xs font-bold hover:opacity-90 transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Share Your Story</span>
+                  <Compass className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
+          </div>
 
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
-              {(!platformStats || platformStats.totalRealExperiences === 0) ? (
-                <div className="p-3 rounded-xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900 text-[11px] text-amber-900 dark:text-amber-300 space-y-1">
-                  <span className="font-bold block">No community experiences yet</span>
-                  <p className="leading-relaxed">
-                    You're among the first people building the Xperiens experience knowledge base. Share a real outcome to create the first entry.
-                  </p>
-                </div>
-              ) : (
-                <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-[11px] text-slate-600 dark:text-slate-300 space-y-1">
-                  <span className="font-bold text-slate-800 dark:text-slate-200 block">The Xperiens Principle:</span>
-                  <p>
-                    Every trial you log as an outcome directly refines future reasoning, making solutions smarter for the next person facing your challenge.
-                  </p>
-                </div>
-              )}
-
-              <button
-                onClick={() => onNavigate('profile')}
-                className="w-full flex items-center justify-between p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/50 hover:bg-indigo-100/80 dark:hover:bg-indigo-900/60 border border-indigo-100 dark:border-indigo-900/50 text-indigo-900 dark:text-indigo-300 text-xs font-bold transition-all cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                  <span>Manage Profile & Banner Theme</span>
-                </div>
-                <ArrowRight className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-              </button>
-            </div>
+          <div className="p-6 rounded-xl border border-brand-border dark:border-dark-border bg-brand-card dark:bg-dark-card space-y-4">
+            <h3 className="text-sm font-serif font-bold text-brand-text-primary dark:text-dark-text-primary">Profile Integrity</h3>
+            <p className="text-xs text-brand-text-secondary dark:text-dark-text-secondary leading-relaxed">
+              Maintain an active profile to build trust within the community. Verified contributors receive higher visibility.
+            </p>
+            <button
+              onClick={() => onNavigate('profile')}
+              className="text-xs font-bold text-brand-accent dark:text-dark-accent hover:underline"
+            >
+              Manage Settings
+            </button>
           </div>
         </div>
       </div>

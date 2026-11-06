@@ -750,6 +750,7 @@ USER PROBLEM:
 - Category: ${problemInput.category}
 - Urgency: ${problemInput.urgency}
 - Constraints: Budget: ${problemInput.constraints?.budget || 'Standard'}, Time: ${problemInput.constraints?.time || 'Standard'}, Resources: ${problemInput.constraints?.resources || 'Standard'}, Experience: ${problemInput.constraints?.experienceLevel || 'Intermediate'}
+- Requested Language Style: ${problemInput.languageStyle || 'en'}
 
 INSTRUCTIONS:
 1. Provide a concise SITUATION SUMMARY identifying constraints.
@@ -757,6 +758,14 @@ INSTRUCTIONS:
 3. Generate a personalized, sequential step-by-step RECOMMENDATION (3-4 actionable steps). For each step, provide a clear 'whyThisStep' explaining the analytical rationale.
 4. Highlight UNCERTAINTIES (e.g. "No community data exists yet; individual results require real-world validation").
 5. Return structured JSON matching the requested schema.
+
+LANGUAGE STYLE INSTRUCTIONS:
+- If languageStyle is 'ta', use Native Tamil (தமிழ்).
+- If languageStyle is 'ta_trans', use Tanglish (Tamil words in English script, colloquial).
+- If languageStyle is 'hi', use Native Hindi (हिन्दी).
+- If languageStyle is 'hi_trans', use Hinglish (Hindi words in English script, colloquial).
+- Otherwise, use Simple English.
+- Regardless of language, ALWAYS keep technical terms (AI, API, etc.) in English.
 `
           : `
 You are XPERIENS's Experience-Based Reasoning Engine.
@@ -770,6 +779,7 @@ USER PROBLEM:
 - Category: ${problemInput.category}
 - Urgency: ${problemInput.urgency}
 - Constraints: Budget: ${problemInput.constraints?.budget || 'Standard'}, Time: ${problemInput.constraints?.time || 'Standard'}, Resources: ${problemInput.constraints?.resources || 'Standard'}, Experience: ${problemInput.constraints?.experienceLevel || 'Intermediate'}
+- Requested Language Style: ${problemInput.languageStyle || 'en'}
 
 AVAILABLE REAL COMMUNITY EXPERIENCES (${topReal.length} found):
 ${JSON.stringify(
@@ -793,10 +803,18 @@ CRITICAL INSTRUCTIONS:
 4. Generate a personalized step-by-step RECOMMENDATION connecting to sourceExperienceIds.
 5. Identify UNCERTAINTIES.
 6. Return structured JSON matching schema.
+
+LANGUAGE STYLE INSTRUCTIONS:
+- If languageStyle is 'ta', use Native Tamil (தமிழ்).
+- If languageStyle is 'ta_trans', use Tanglish (Tamil words in English script, colloquial).
+- If languageStyle is 'hi', use Native Hindi (हिन्दी).
+- If languageStyle is 'hi_trans', use Hinglish (Hindi words in English script, colloquial).
+- Otherwise, use Simple English.
+- Regardless of language, ALWAYS keep technical terms (AI, API, etc.) in English.
 `;
 
         const response = await ai.models.generateContent({
-          model: 'gemini-1.5-flash',
+          model: 'gemini-3.8-flash',
           contents: prompt,
           config: {
             responseMimeType: 'application/json',
@@ -1535,7 +1553,7 @@ Return valid JSON adhering strictly to the schema.
 `;
 
         const response = await ai.models.generateContent({
-          model: 'gemini-1.5-flash',
+          model: 'gemini-3.8-flash',
           contents: prompt,
           config: {
             responseMimeType: 'application/json',

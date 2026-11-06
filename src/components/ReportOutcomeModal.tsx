@@ -3,7 +3,7 @@ import { SolutionAnalysis, OutcomeStatus } from '../types';
 import { reportOutcomeFeedback } from '../services/api';
 import { AiWritingField } from './AiWritingField';
 import confetti from 'canvas-confetti';
-import { X, CheckCircle2, Clock, XCircle, Sparkles, Shield, Send, Share2, Lock } from 'lucide-react';
+import { X, CheckCircle2, Clock, XCircle, Send, Share2 } from 'lucide-react';
 
 interface ReportOutcomeModalProps {
   solution: SolutionAnalysis;
@@ -34,7 +34,7 @@ export const ReportOutcomeModal: React.FC<ReportOutcomeModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!whatHappened.trim()) {
-      setError('Please describe what happened during your trial.');
+      setError('Please describe what happened.');
       return;
     }
 
@@ -42,7 +42,7 @@ export const ReportOutcomeModal: React.FC<ReportOutcomeModalProps> = ({
     setError(null);
 
     try {
-      const res = await reportOutcomeFeedback(solution.id, {
+      await reportOutcomeFeedback(solution.id, {
         result,
         whatHappened: whatHappened.trim(),
         whatLearned: whatLearned.trim() || 'Practical execution and structured tracking gave key insights.',
@@ -58,7 +58,7 @@ export const ReportOutcomeModal: React.FC<ReportOutcomeModalProps> = ({
           particleCount: 85,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#10b981', '#6366f1', '#3b82f6', '#f59e0b'],
+          colors: ['#8B9CF6', '#5969C7', '#10b981'],
         });
       } catch (e) {}
 
@@ -67,229 +67,125 @@ export const ReportOutcomeModal: React.FC<ReportOutcomeModalProps> = ({
         onSuccess();
       }, 1500);
     } catch (err: any) {
-      setError(err.message || 'Failed to record outcome. Please try again.');
+      setError(err.message || 'Failed to record outcome.');
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
-      <div
-        id="report-outcome-modal-card"
-        className="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-xl overflow-hidden flex flex-col max-h-[92vh]"
-      >
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xs tracking-wider">
-              CM
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-slate-900">
-                How Did It Go?
-              </h3>
-              <p className="text-xs text-slate-500">
-                Report your outcome to build real community knowledge
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-dark-bg/60 backdrop-blur-md animate-fadeIn">
+      <div className="bg-brand-card dark:bg-dark-card w-full max-w-xl rounded-2xl border border-brand-border dark:border-dark-border shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="px-8 py-6 border-b border-brand-border dark:border-dark-border flex items-center justify-between">
+           <div className="space-y-1">
+             <h3 className="text-xl font-serif font-bold text-brand-text-primary dark:text-dark-text-primary">Record Outcome</h3>
+             <p className="text-xs text-brand-text-secondary dark:text-dark-text-secondary font-light">Contribute to the collective intelligence pool.</p>
+           </div>
+           <button onClick={onClose} className="text-brand-text-secondary hover:text-brand-text-primary transition-colors"><X className="w-6 h-6" /></button>
         </div>
 
         {submittedSuccess ? (
-          <div className="p-8 text-center space-y-4">
-            <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-8 h-8" />
+          <div className="p-12 text-center space-y-6">
+            <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
+              <CheckCircle2 className="w-10 h-10" />
             </div>
-            <h4 className="text-lg font-bold text-slate-900">
-              {shareWhatLearned ? 'Real Community Experience Created!' : 'Outcome Recorded!'}
-            </h4>
-            <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
-              {shareWhatLearned
-                ? "Your response has been structured into a real community experience. It is now immediately available in the Xperiens knowledge base to help future users!"
-                : "Your trial outcome has been saved to your private solution history."}
-            </p>
-            {shareWhatLearned && (
-              <div className="p-3 bg-emerald-50 rounded-xl border border-emerald-200 text-xs font-semibold text-emerald-900">
-                ✓ Added to Real Community Experiences (Count +1)
-              </div>
-            )}
+            <div className="space-y-2">
+               <h4 className="text-2xl font-serif font-bold text-brand-text-primary dark:text-dark-text-primary">Wisdom Logged</h4>
+               <p className="text-sm text-brand-text-secondary dark:text-dark-text-secondary max-w-sm mx-auto leading-relaxed">
+                 Your trial outcome has been recorded. It will now help others facing similar challenges make more informed decisions.
+               </p>
+            </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
-            {/* Target Solution Summary */}
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700">
-              <span className="font-bold text-slate-900 block mb-0.5">Solution Evaluated:</span>
-              <p className="line-clamp-2 italic text-slate-600">"{solution.originalProblem.problem}"</p>
+          <form onSubmit={handleSubmit} className="p-8 space-y-8 overflow-y-auto">
+            <div className="p-5 bg-brand-bg dark:bg-dark-sec-bg rounded-xl border border-brand-border dark:border-dark-border space-y-2">
+              <span className="text-[10px] font-bold text-brand-text-secondary dark:text-dark-text-secondary uppercase tracking-widest opacity-60">Trialing Plan:</span>
+              <p className="text-sm font-serif font-bold text-brand-text-primary dark:text-dark-text-primary line-clamp-1">"{solution.originalProblem.problem}"</p>
             </div>
 
-            {/* Question 1: How did it go? */}
-            <div className="space-y-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-800">
-                1. How did it go? <span className="text-rose-500">*</span>
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  id="outcome-worked-btn"
-                  onClick={() => setResult('worked')}
-                  className={`p-3 rounded-xl border text-center text-xs font-bold flex flex-col items-center gap-1.5 transition-all ${
-                    result === 'worked'
-                      ? 'bg-emerald-50 border-emerald-500 text-emerald-800 ring-2 ring-emerald-500/20'
-                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                  }`}
-                >
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  <span>Worked</span>
-                </button>
-
-                <button
-                  type="button"
-                  id="outcome-partial-btn"
-                  onClick={() => setResult('partially_worked')}
-                  className={`p-3 rounded-xl border text-center text-xs font-bold flex flex-col items-center gap-1.5 transition-all ${
-                    result === 'partially_worked'
-                      ? 'bg-amber-50 border-amber-500 text-amber-800 ring-2 ring-amber-500/20'
-                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                  }`}
-                >
-                  <Clock className="w-4 h-4 text-amber-600" />
-                  <span>Partially worked</span>
-                </button>
-
-                <button
-                  type="button"
-                  id="outcome-failed-btn"
-                  onClick={() => setResult('did_not_work')}
-                  className={`p-3 rounded-xl border text-center text-xs font-bold flex flex-col items-center gap-1.5 transition-all ${
-                    result === 'did_not_work'
-                      ? 'bg-rose-50 border-rose-500 text-rose-800 ring-2 ring-rose-500/20'
-                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-                  }`}
-                >
-                  <XCircle className="w-4 h-4 text-rose-600" />
-                  <span>Didn't work</span>
-                </button>
+            <div className="space-y-4">
+              <label className="text-xs font-bold text-brand-text-primary dark:text-dark-text-primary uppercase tracking-widest">01. What was the result?</label>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { id: 'worked', label: 'Worked', icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30', border: 'border-emerald-500' },
+                  { id: 'partially_worked', label: 'Partial', icon: Clock, color: 'text-amber-600', bg: 'bg-amber-50 dark:bg-amber-950/30', border: 'border-amber-500' },
+                  { id: 'did_not_work', label: 'Failed', icon: XCircle, color: 'text-rose-600', bg: 'bg-rose-50 dark:bg-rose-950/30', border: 'border-rose-500' }
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setResult(item.id as OutcomeStatus)}
+                    className={`p-4 rounded-xl border transition-all flex flex-col items-center gap-3 ${
+                      result === item.id 
+                        ? `${item.bg} ${item.border} ${item.color} shadow-sm` 
+                        : 'bg-brand-card dark:bg-dark-card border-brand-border dark:border-dark-border text-brand-text-secondary'
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    <span className="text-xs font-bold uppercase tracking-widest">{item.label}</span>
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Question 2: Would you like to share what you learned? */}
-            <div className="p-4 rounded-xl bg-indigo-50/70 border border-indigo-100 space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Share2 className="w-4 h-4 text-indigo-700" />
-                  <label className="text-xs font-bold text-indigo-950">
-                    Would you like to share what you learned?
-                  </label>
-                </div>
-                <input
-                  type="checkbox"
-                  id="share-what-learned-toggle"
-                  checked={shareWhatLearned}
-                  onChange={(e) => setShareWhatLearned(e.target.checked)}
-                  className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer"
-                />
-              </div>
-              <p className="text-[11px] text-indigo-800/80 leading-relaxed">
-                {shareWhatLearned
-                  ? "Yes! Converting your response into a structured real community experience helps future users make better decisions."
-                  : "No, save privately to my personal history only."}
-              </p>
+            <div className="p-6 bg-brand-bg dark:bg-dark-sec-bg rounded-xl border border-brand-border dark:border-dark-border flex items-start gap-4">
+               <input
+                 type="checkbox"
+                 checked={shareWhatLearned}
+                 onChange={(e) => setShareWhatLearned(e.target.checked)}
+                 className="mt-1 rounded border-brand-border text-brand-accent"
+               />
+               <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Share2 className="w-4 h-4 text-brand-accent dark:text-dark-accent" />
+                    <span className="text-sm font-bold text-brand-text-primary dark:text-dark-text-primary">Share as Public Story</span>
+                  </div>
+                  <p className="text-xs text-brand-text-secondary dark:text-dark-text-secondary leading-relaxed font-light">
+                    Transform this outcome into a structured experience card to help the community. You can still remain anonymous.
+                  </p>
+               </div>
             </div>
 
-            {/* What happened */}
-            <AiWritingField
-              id="outcome-what-happened-input"
-              fieldName="Outcome / What Happened"
-              label="What happened?"
-              required
-              rows={3}
-              value={whatHappened}
-              onChange={setWhatHappened}
-              placeholder="Describe what occurred when you put the recommendation into practice..."
-            />
+            <div className="space-y-6">
+              <AiWritingField
+                id="outcome-what-happened"
+                fieldName="Description"
+                label="02. What occurred?"
+                required
+                rows={3}
+                value={whatHappened}
+                onChange={setWhatHappened}
+                placeholder="Describe the real-world execution..."
+              />
 
-            {/* What did you learn */}
-            <AiWritingField
-              type="input"
-              id="outcome-what-learned-input"
-              fieldName="Lesson Learned"
-              label="What did you learn? (Key Takeaway)"
-              value={whatLearned}
-              onChange={setWhatLearned}
-              placeholder="e.g. Taking small trial steps before making commitments prevented friction..."
-            />
+              <AiWritingField
+                id="outcome-what-learned"
+                fieldName="Key Lesson"
+                label="03. The primary lesson"
+                rows={2}
+                value={whatLearned}
+                onChange={setWhatLearned}
+                placeholder="What is the one thing others should know?"
+              />
+            </div>
 
-            {/* What would you do differently */}
-            <AiWritingField
-              type="input"
-              id="outcome-what-change-input"
-              fieldName="What Would Change"
-              label="What would you do differently?"
-              value={whatWouldChange}
-              onChange={setWhatWouldChange}
-              placeholder="e.g. Involve collaborators earlier in the timeline..."
-            />
-
-            {/* Privacy & Author options */}
-            {shareWhatLearned && (
-              <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <label className="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
+            <div className="flex items-center justify-between pt-6 border-t border-brand-border dark:border-dark-border">
+               <label className="flex items-center gap-3 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={isAnonymous}
                     onChange={(e) => setIsAnonymous(e.target.checked)}
-                    className="rounded text-indigo-600 focus:ring-indigo-500"
+                    className="rounded border-brand-border text-brand-accent"
                   />
-                  <span>Post anonymously</span>
-                </label>
-
-                {!isAnonymous && (
-                  <input
-                    type="text"
-                    placeholder="Your Name / Role (e.g. Alex, Designer)"
-                    value={authorName}
-                    onChange={(e) => setAuthorName(e.target.value)}
-                    className="text-xs p-2 rounded-lg border border-slate-300 w-full sm:w-52 outline-hidden"
-                  />
-                )}
-              </div>
-            )}
-
-            {error && (
-              <div className="p-3 bg-rose-50 text-rose-700 text-xs rounded-xl border border-rose-200">
-                {error}
-              </div>
-            )}
-
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-100 rounded-xl"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                id="submit-outcome-btn"
-                disabled={isSubmitting}
-                className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-bold text-white bg-slate-900 hover:bg-indigo-700 disabled:opacity-50 rounded-xl shadow-xs transition-all cursor-pointer"
-              >
-                {isSubmitting ? (
-                  <span>Recording...</span>
-                ) : (
-                  <>
-                    <Send className="w-3.5 h-3.5" />
-                    <span>{shareWhatLearned ? 'Publish Real Experience' : 'Save Outcome'}</span>
-                  </>
-                )}
-              </button>
+                  <span className="text-xs font-bold text-brand-text-secondary dark:text-dark-text-secondary uppercase tracking-widest">Post Anonymously</span>
+               </label>
+               
+               <button
+                 type="submit"
+                 disabled={isSubmitting}
+                 className="px-10 py-3 bg-brand-text-primary dark:bg-dark-text-primary text-brand-bg dark:text-dark-bg rounded-lg font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all flex items-center gap-3 shadow-xl"
+               >
+                 {isSubmitting ? 'Recording...' : <><Send className="w-4 h-4" /> Save Outcome</>}
+               </button>
             </div>
           </form>
         )}

@@ -55,7 +55,7 @@ export const LegalAcceptanceView: React.FC<LegalAcceptanceViewProps> = ({ onComp
       <button 
         onClick={handleSubmit}
         disabled={!agreed || acceptanceLoading}
-        className="w-full py-3 bg-brand-deep-indigo dark:bg-brand-soft-violet text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity cursor-pointer"
+        className="w-full py-3 bg-brand-accent dark:bg-dark-accent text-white font-bold rounded-xl hover:opacity-90 disabled:opacity-50 transition-all cursor-pointer"
       >
         {acceptanceLoading ? 'Saving...' : 'Accept & Continue to Xperiens'}
       </button>

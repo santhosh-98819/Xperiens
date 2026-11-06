@@ -136,9 +136,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-brand-warm-ivory dark:bg-brand-charcoal text-brand-charcoal dark:text-brand-warm-ivory font-sans transition-colors duration-200">
+    <>
       {/* Splash Screen - Only shown on initial load */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {showSplash && (
           <SplashScreen 
             onComplete={() => setShowSplash(false)} 
@@ -146,133 +146,138 @@ export default function App() {
           />
         )}
       </AnimatePresence>
-      {/* Top Navigation - Only show if not on onboarding */}
-      {currentView !== 'onboarding' && (
-        <Navbar
-          currentView={currentView}
-          onNavigate={handleNavigate}
-          user={user}
-          onOpenAuth={() => setAuthModalOpen(true)}
-          activeSolutionsCount={activeSolutionsCount}
-        />
-      )}
 
-      {/* Main Content Area */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {currentView === 'home' && (
-          <HomeView
-            onNavigate={handleNavigate}
-            onSelectProblemPreset={handleSelectProblemPreset}
-            featuredExperiences={featuredExperiences}
-            onSelectExperience={handleSelectExperience}
-          />
-        )}
+      {!showSplash && (
+        <div className="min-h-screen flex flex-col bg-brand-bg dark:bg-dark-bg text-brand-text-primary dark:text-dark-text-primary font-sans transition-colors duration-300">
+          {/* Top Navigation - Only show if not on onboarding */}
+          {currentView !== 'onboarding' && (
+            <Navbar
+              currentView={currentView}
+              onNavigate={handleNavigate}
+              user={user}
+              onOpenAuth={() => setAuthModalOpen(true)}
+              activeSolutionsCount={activeSolutionsCount}
+            />
+          )}
 
-        {currentView === 'onboarding' && (
-          <OnboardingView
-            onComplete={() => handleNavigate('home')}
-            onNavigate={handleNavigate}
-          />
-        )}
+          {/* Main Content Area */}
+          <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            {currentView === 'home' && (
+              <HomeView
+                onNavigate={handleNavigate}
+                onSelectProblemPreset={handleSelectProblemPreset}
+                featuredExperiences={featuredExperiences}
+                onSelectExperience={handleSelectExperience}
+              />
+            )}
 
-        {currentView === 'login' && (
-          <LoginView
-            onNavigate={handleNavigate}
-            onSuccessRedirect={() => handleNavigate('dashboard')}
-          />
-        )}
+            {currentView === 'onboarding' && (
+              <OnboardingView
+                onComplete={() => handleNavigate('home')}
+                onNavigate={handleNavigate}
+              />
+            )}
 
-        {currentView === 'signup' && (
-          <SignUpView
-            onNavigate={handleNavigate}
-            onSuccessRedirect={() => handleNavigate('dashboard')}
-          />
-        )}
+            {currentView === 'login' && (
+              <LoginView
+                onNavigate={handleNavigate}
+                onSuccessRedirect={() => handleNavigate('dashboard')}
+              />
+            )}
 
-        {currentView === 'legal-acceptance' && (
-          <LegalAcceptanceView onComplete={() => handleNavigate('home')} onNavigate={handleNavigate} />
-        )}
+            {currentView === 'signup' && (
+              <SignUpView
+                onNavigate={handleNavigate}
+                onSuccessRedirect={() => handleNavigate('dashboard')}
+              />
+            )}
 
-        {currentView === 'privacy-policy' && <PrivacyPolicyView onBack={handleBack} />}
-        {currentView === 'terms-and-conditions' && <TermsAndConditionsView onBack={handleBack} />}
-        {currentView === 'community-guidelines' && <CommunityGuidelinesView onBack={handleBack} />}
+            {currentView === 'legal-acceptance' && (
+              <LegalAcceptanceView onComplete={() => handleNavigate('home')} onNavigate={handleNavigate} />
+            )}
 
-        {currentView === 'ask' && (
-          <AskView
-            initialProblem={askInitialProblem}
-            initialCategory={askInitialCategory}
-            onAnalysisComplete={handleAnalysisComplete}
-            onNavigate={handleNavigate}
-          />
-        )}
+            {currentView === 'privacy-policy' && <PrivacyPolicyView onBack={handleBack} />}
+            {currentView === 'terms-and-conditions' && <TermsAndConditionsView onBack={handleBack} />}
+            {currentView === 'community-guidelines' && <CommunityGuidelinesView onBack={handleBack} />}
 
-        {currentView === 'solution' && currentSolution && (
-          <SolutionView
-            solution={currentSolution}
-            onBack={() => handleNavigate('ask')}
-            onNavigate={handleNavigate}
-          />
-        )}
+            {currentView === 'ask' && (
+              <AskView
+                initialProblem={askInitialProblem}
+                initialCategory={askInitialCategory}
+                onAnalysisComplete={handleAnalysisComplete}
+                onNavigate={handleNavigate}
+              />
+            )}
 
-        {currentView === 'experiences' && (
-          <ExperiencesView
-            initialCategory={askInitialCategory}
-            onNavigate={handleNavigate}
-            onSelectExperience={handleSelectExperience}
-          />
-        )}
+            {currentView === 'solution' && currentSolution && (
+              <SolutionView
+                solution={currentSolution}
+                onBack={() => handleNavigate('ask')}
+                onNavigate={handleNavigate}
+              />
+            )}
 
-        {currentView === 'share-experience' && (
-          <ShareExperienceView
-            onNavigate={handleNavigate}
-            onExperienceAdded={(newExp) => {
-              setFeaturedExperiences((prev) => [newExp, ...prev]);
-            }}
-          />
-        )}
+            {currentView === 'experiences' && (
+              <ExperiencesView
+                initialCategory={askInitialCategory}
+                onNavigate={handleNavigate}
+                onSelectExperience={handleSelectExperience}
+              />
+            )}
 
-        {currentView === 'solutions' && (
-          <MySolutionsView
-            onSelectSolution={handleSelectSolution}
-            onNavigate={handleNavigate}
-          />
-        )}
+            {currentView === 'share-experience' && (
+              <ShareExperienceView
+                onNavigate={handleNavigate}
+                onExperienceAdded={(newExp) => {
+                  setFeaturedExperiences((prev) => [newExp, ...prev]);
+                }}
+              />
+            )}
 
-        {currentView === 'dashboard' && (
-          <DashboardView
+            {currentView === 'solutions' && (
+              <MySolutionsView
+                onSelectSolution={handleSelectSolution}
+                onNavigate={handleNavigate}
+              />
+            )}
+
+            {currentView === 'dashboard' && (
+              <DashboardView
+                user={user}
+                onNavigate={handleNavigate}
+                onSelectSolution={handleSelectSolution}
+              />
+            )}
+
+            {currentView === 'profile' && (
+              <ProfileView
+                onNavigate={handleNavigate}
+                onSelectSolution={handleSelectSolution}
+                soundEnabled={soundEnabled}
+                onToggleSound={handleToggleSound}
+              />
+            )}
+
+            {currentView === 'experience-detail' && currentExperience && (
+              <ExperienceDetailView
+                experience={currentExperience}
+                onBack={() => handleNavigate('experiences')}
+              />
+            )}
+          </main>
+
+          {/* Global Footer - Only show if not on onboarding */}
+          {currentView !== 'onboarding' && <Footer onNavigate={handleNavigate} />}
+
+          {/* User Profile / Auth Modal */}
+          <AuthModal
             user={user}
+            isOpen={authModalOpen}
+            onClose={() => setAuthModalOpen(false)}
             onNavigate={handleNavigate}
-            onSelectSolution={handleSelectSolution}
           />
-        )}
-
-        {currentView === 'profile' && (
-          <ProfileView
-            onNavigate={handleNavigate}
-            onSelectSolution={handleSelectSolution}
-            soundEnabled={soundEnabled}
-            onToggleSound={handleToggleSound}
-          />
-        )}
-
-        {currentView === 'experience-detail' && currentExperience && (
-          <ExperienceDetailView
-            experience={currentExperience}
-            onBack={() => handleNavigate('experiences')}
-          />
-        )}
-      </main>
-
-      {/* Global Footer - Only show if not on onboarding */}
-      {currentView !== 'onboarding' && <Footer onNavigate={handleNavigate} />}
-
-      {/* User Profile / Auth Modal */}
-      <AuthModal
-        user={user}
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-        onUpdateUser={(updated) => setUser(updated)}
-      />
-    </div>
+        </div>
+      )}
+    </>
   );
 }

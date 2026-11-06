@@ -82,6 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           isAnonymous: data.isAnonymous !== undefined ? Boolean(data.isAnonymous) : Boolean(user.isAnonymous),
           profileVisibility: (data.profileVisibility as ProfileVisibility) || 'public',
           themePreference: data.themePreference || undefined,
+          languagePreference: data.languagePreference || undefined,
           aiWritingAssistEnabled: data.aiWritingAssistEnabled !== undefined ? Boolean(data.aiWritingAssistEnabled) : true,
           onboardingCompleted: data.onboardingCompleted !== undefined ? Boolean(data.onboardingCompleted) : true,
           isGuest: user.isAnonymous,

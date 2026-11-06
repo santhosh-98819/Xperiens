@@ -66,6 +66,7 @@ export interface ProblemInput {
   category: Category;
   urgency: UrgencyLevel;
   includeDemoData?: boolean;
+  languageStyle?: LanguageChoice;
 }
 
 export interface DetectedFactor {
@@ -184,6 +185,8 @@ export interface LegalAcceptance {
   acceptedAt?: string;
 }
 
+export type LanguageChoice = 'en' | 'ta' | 'ta_trans' | 'hi' | 'hi_trans';
+
 export interface UserProfile {
   id: string;
   uid?: string;
@@ -198,6 +201,7 @@ export interface UserProfile {
   isAnonymous: boolean;
   profileVisibility?: ProfileVisibility;
   themePreference?: ThemePreference;
+  languagePreference?: LanguageChoice;
   isGuest: boolean;
   joinedAt: string;
   createdAt?: string;

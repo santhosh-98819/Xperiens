@@ -3,14 +3,32 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-brand-deep-indigo: #29265B;
-  --color-brand-warm-ivory: #F8F7F3;
-  --color-brand-soft-violet: #7771C8;
-  --color-brand-charcoal: #25243A;
-  --color-brand-lavender-mist: #E9E7F2;
+  --color-brand-bg: #FAFAF8;
+  --color-brand-card: #FFFFFF;
+  --color-brand-border: #E4E4E7;
+  --color-brand-text-primary: #18181B;
+  --color-brand-text-secondary: #71717A;
+  --color-brand-accent: #5969C7;
+
+  --color-dark-bg: #101318;
+  --color-dark-sec-bg: #151A22;
+  --color-dark-card: #191E26;
+  --color-dark-border: #2B303A;
+  --color-dark-text-primary: #F5F5F5;
+  --color-dark-text-secondary: #A1A1AA;
+  --color-dark-accent: #8B9CF6;
   
   --font-sans: 'Plus Jakarta Sans', sans-serif;
   --font-serif: 'Source Serif 4', serif;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-bg text-brand-text-primary transition-colors duration-300;
+  }
+  .dark body {
+    @apply bg-dark-bg text-dark-text-primary;
+  }
 }
 
 @keyframes fadeIn {

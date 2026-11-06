@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Logo } from './Logo';
+import { useLanguage } from '../contexts/LanguageContext';
+import { BRAND_TAGLINE } from '../constants/brand';
 
 interface SplashScreenProps {
   onComplete: () => void;
@@ -10,6 +12,7 @@ interface SplashScreenProps {
 export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete, soundEnabled }) => {
   const [isVisible, setIsVisible] = useState(true);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const { t } = useLanguage();
 
   const playStartupSound = () => {
     if (!soundEnabled) return;
@@ -123,7 +126,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete, soundEna
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5, ease: 'easeInOut' }}
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-brand-warm-ivory dark:bg-brand-charcoal overflow-hidden"
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-brand-bg dark:bg-dark-bg overflow-hidden"
         >
           <div className="relative flex flex-col items-center gap-8 max-w-sm w-full px-6">
             {/* Animated Logo */}
@@ -136,7 +139,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete, soundEna
                 delay: 0.2
               }}
             >
-              <Logo className="h-16 w-auto" />
+              <Logo className="h-20 w-auto" />
             </motion.div>
 
             {/* Brand Name & Tagline */}
@@ -145,18 +148,18 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete, soundEna
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
-                className="text-3xl font-serif font-bold text-brand-deep-indigo dark:text-brand-warm-ivory tracking-tight"
+                className="text-4xl font-serif font-bold text-brand-text-primary dark:text-dark-text-primary tracking-tight"
               >
-                Xperiens
+                {t('splash.greeting', 'Xperiens')}
               </motion.h1>
               
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1.2, delay: 1.4 }}
-                className="text-sm font-sans font-medium text-brand-charcoal/50 dark:text-brand-warm-ivory/50 uppercase tracking-[0.2em]"
+                className="text-sm font-serif italic text-brand-text-secondary dark:text-dark-text-secondary mt-2 max-w-[280px]"
               >
-                Every experience has something to teach.
+                {BRAND_TAGLINE}
               </motion.p>
             </div>
 
@@ -165,7 +168,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onComplete, soundEna
               initial={{ width: 0 }}
               animate={{ width: '100%' }}
               transition={{ duration: 1.8, delay: 0.4, ease: 'easeInOut' }}
-              className="absolute bottom-[-40px] left-0 h-[1px] bg-brand-soft-violet/20"
+              className="absolute bottom-[-40px] left-0 h-[1px] bg-brand-accent/20"
             />
           </div>
         </motion.div>
