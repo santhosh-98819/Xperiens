@@ -159,13 +159,14 @@ export async function updateUserExperience(
  * Delete an experience document
  */
 export async function deleteUserExperience(expId: string): Promise<boolean> {
+  const deletePath = `experiences/${expId}`;
   try {
     const ref = doc(db, 'experiences', expId);
     await deleteDoc(ref);
     return true;
   } catch (err) {
-    console.error('Error deleting experience in Firestore:', err);
-    throw err;
+    const { handleFirestoreError, OperationType } = await import('../lib/firestoreErrors');
+    handleFirestoreError(err, OperationType.DELETE, deletePath);
   }
 }
 
@@ -205,10 +206,15 @@ export async function deleteAccountAndData(userId: string): Promise<void> {
   }
 
   // 1. Delete Firestore user document
+  const userPath = `users/${userId}`;
   try {
     const userRef = doc(db, 'users', userId);
     await deleteDoc(userRef);
-  } catch (e) {
+  } catch (e: any) {
+    if (e?.code === 'permission-denied') {
+      const { handleFirestoreError, OperationType } = await import('../lib/firestoreErrors');
+      handleFirestoreError(e, OperationType.DELETE, userPath);
+    }
     console.warn('User document delete notice:', e);
   }
 
@@ -216,7 +222,17 @@ export async function deleteAccountAndData(userId: string): Promise<void> {
   try {
     const expQuery = query(collection(db, 'experiences'), where('userId', '==', userId));
     const expSnap = await getDocs(expQuery);
-    const deletePromises = expSnap.docs.map((d) => deleteDoc(d.ref));
+    const deletePromises = expSnap.docs.map(async (d) => {
+      try {
+        await deleteDoc(d.ref);
+      } catch (err: any) {
+        if (err?.code === 'permission-denied') {
+          const { handleFirestoreError, OperationType } = await import('../lib/firestoreErrors');
+          handleFirestoreError(err, OperationType.DELETE, `experiences/${d.id}`);
+        }
+        throw err;
+      }
+    });
     await Promise.all(deletePromises);
   } catch (e) {
     console.warn('Experiences delete notice:', e);

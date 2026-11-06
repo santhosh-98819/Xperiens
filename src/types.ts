@@ -226,3 +226,15 @@ export interface PlatformStats {
   activeCategories: number;
   communityContributors: number;
 }
+
+export type RiskLevel = 'low' | 'medium' | 'high';
+
+export interface ExperienceValidationResult {
+  isValid: boolean;
+  riskLevel: RiskLevel;
+  reason?: string;
+  isMeaningless: boolean;
+  suggestedFixes?: string[];
+  feedback?: string;
+}
+

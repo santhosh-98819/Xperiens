@@ -22,6 +22,13 @@ try {
   console.warn('Could not read firebase-applet-config.json:', e);
 }
 
+// Ensure databaseId is not empty and matches expected pattern
+const ACTIVE_DB_ID = databaseId && databaseId !== '(default)' 
+  ? databaseId 
+  : 'ai-studio-commonmind-1be402e9-53c6-4be5-bf36-4a58c66ba872';
+
+console.log(`Initializing Firebase Admin for Project: "${projectId}", Database: "${ACTIVE_DB_ID}"`);
+
 let app: App;
 if (!getApps().length) {
   const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
@@ -47,10 +54,5 @@ if (!getApps().length) {
 }
 
 export const adminAuth = getAuth(app);
-// Always use the configured database ID or fallback
-export const adminDb = getFirestore(
-  app,
-  databaseId && databaseId !== '(default)'
-    ? databaseId
-    : 'ai-studio-commonmind-1be402e9-53c6-4be5-bf36-4a58c66ba872'
-);
+// Always use the resolved database ID
+export const adminDb = getFirestore(app, ACTIVE_DB_ID);

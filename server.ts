@@ -1,13 +1,13 @@
 import express, { Request, Response } from 'express';
-import { adminDb } from './src/server/firebaseAdmin.js';
+import { adminDb } from './src/server/firebaseAdmin';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { GoogleGenAI, Type } from '@google/genai';
 import { createServer as createViteServer } from 'vite';
-import { SEED_EXPERIENCES } from './src/data/seedExperiences.js';
-import { authMiddleware, optionalAuthMiddleware } from './src/server/middleware/auth.js';
-import { generalLimiter, experienceCreationLimiter, aiLimiter } from './src/server/services/rateLimiter.js';
+import { SEED_EXPERIENCES } from './src/data/seedExperiences';
+import { authMiddleware, optionalAuthMiddleware } from './src/server/middleware/auth';
+import { generalLimiter, experienceCreationLimiter, aiLimiter } from './src/server/services/rateLimiter';
 import {
   Experience,
   ProblemInput,
@@ -18,8 +18,11 @@ import {
   DetectedFactor,
   PatternInsight,
   RecommendationStep,
-  EvidenceBreakdown
-} from './src/types.js';
+  EvidenceBreakdown,
+  RiskLevel,
+  ExperienceValidationResult
+} from './src/types';
+import { performHeuristicCheck, validateExperienceWithAI } from './src/server/services/validationService';
 
 dotenv.config();
 
@@ -43,7 +46,7 @@ const _filename = getFilename();
 const _dirname = getDirname();
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = 3000;
 
 app.set('trust proxy', 1);
 app.use(express.json());
@@ -514,6 +517,46 @@ app.get('/api/experiences', (req: Request, res: Response) => {
   }
 });
 
+// POST /api/experiences/validate (Authenticity & Quality Guard validation before publishing)
+app.post('/api/experiences/validate', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const { pillars, languageStyle } = req.body;
+    
+    if (!pillars || typeof pillars !== 'object') {
+      return res.status(400).json({ success: false, message: 'Invalid validation input.' });
+    }
+
+    // 1. Parallelize Heuristic and AI checks for performance
+    const combinedText = Object.values(pillars).join(' ');
+    const heuristicResult = performHeuristicCheck(combinedText);
+    
+    if (heuristicResult.isMeaningless) {
+      return res.json({
+        success: true,
+        validation: {
+          isValid: false,
+          riskLevel: 'high',
+          reason: heuristicResult.reason,
+          isMeaningless: true,
+          suggestedFixes: ['Please provide more descriptive details about your experience.'],
+          feedback: 'Content appears to be meaningless or too short.'
+        }
+      });
+    }
+    
+    // 2. Contextual AI Authenticity Analysis
+    const aiResult = await validateExperienceWithAI(pillars, languageStyle);
+    
+    res.json({
+      success: true,
+      validation: aiResult
+    });
+  } catch (error) {
+    console.error('Validation error:', error);
+    res.status(500).json({ success: false, message: 'Internal validation error.' });
+  }
+});
+
 // POST /api/experiences (User A shares an experience -> Store -> Moderate/validate -> Publish to community repository)
 app.post('/api/experiences', authMiddleware, experienceCreationLimiter, async (req: Request, res: Response) => {
   try {
@@ -521,6 +564,14 @@ app.post('/api/experiences', authMiddleware, experienceCreationLimiter, async (r
     if (!moderation.isValid || !moderation.sanitized) {
       res.status(400).json({ success: false, message: moderation.error || 'Invalid experience submission.' });
       return;
+    }
+
+    // Mandatory backend validation check
+    const combinedText = `${moderation.sanitized.situation} ${moderation.sanitized.outcome} ${moderation.sanitized.lesson}`;
+    const heuristicResult = performHeuristicCheck(combinedText);
+    if (heuristicResult.isMeaningless) {
+       res.status(400).json({ success: false, message: 'Submission blocked: Content appears to be meaningless or random characters.' });
+       return;
     }
 
     const clean = moderation.sanitized;
@@ -1239,6 +1290,7 @@ async function startServer() {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
+      root: process.cwd(),
     });
     app.use(vite.middlewares);
   } else {

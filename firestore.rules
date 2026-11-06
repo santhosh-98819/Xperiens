@@ -2,37 +2,53 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // User Profiles: Users can read and write their own document
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+
+    // User Profiles
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId);
     }
     
-    // Experiences Repository: Publicly readable for all community members & visitors
+    // Experiences Repository
     match /experiences/{experienceId} {
       allow read: if true;
-      allow create: if request.auth != null;
-      allow update: if request.auth != null || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usefulCount', 'notUsefulCount']);
-      allow delete: if true;
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && (
+        // Author update
+        (resource.data.userId == request.auth.uid) || 
+        // Community feedback (useful/notUseful)
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usefulCount', 'notUsefulCount']))
+      );
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
     }
     
     // Problems
     match /problems/{problemId} {
-      allow read, write: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
+      allow read, write: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
     }
     
     // Solutions
     match /solutions/{solutionId} {
-      allow read, write: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
+      allow read, write: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
     }
     
     // Outcome Feedback
     match /outcomeFeedback/{feedbackId} {
-      allow read, write: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
+      allow read, write: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
     }
     
     // Saved Solutions
     match /savedSolutions/{savedId} {
-      allow read, write: if request.auth != null && (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
+      allow read, write: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
     }
   }
 }

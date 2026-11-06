@@ -1,5 +1,15 @@
 import { auth } from '../lib/firebase';
-import { Experience, ProblemInput, SolutionAnalysis, PlatformStats, UserProfile, OutcomeFeedback, OutcomeNotification } from '../types';
+import { 
+  Experience, 
+  ProblemInput, 
+  SolutionAnalysis, 
+  PlatformStats, 
+  UserProfile, 
+  OutcomeFeedback, 
+  OutcomeNotification,
+  ExperienceValidationResult,
+  LanguageChoice
+} from '../types';
 import { SEED_EXPERIENCES } from '../data/seedExperiences';
 
 const USER_STORAGE_KEY = 'xperiens_user';
@@ -104,6 +114,22 @@ export async function fetchExperiences(params?: {
   }
 }
 
+export async function validateExperience(pillars: Record<string, string>, languageStyle?: LanguageChoice): Promise<ExperienceValidationResult> {
+  const headers: Record<string, string> = { 
+    'Content-Type': 'application/json',
+    ...await getAuthHeaders()
+  };
+  const res = await fetch('/api/experiences/validate', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ pillars, languageStyle }),
+  });
+  if (!res.ok) throw new Error('Validation service unreachable');
+  const data = await res.json();
+  return data.validation;
+}
+
+
 export async function submitExperience(exp: Partial<Experience>): Promise<Experience> {
   const headers: Record<string, string> = { 
     'Content-Type': 'application/json',
@@ -127,12 +153,22 @@ export async function submitExperience(exp: Partial<Experience>): Promise<Experi
 }
 
 export async function deleteExperience(id: string): Promise<{ success: boolean; message?: string }> {
+  const deletePath = `experiences/${id}`;
   try {
     // Attempt Firestore direct deletion as well for instant cross-tab sync if authenticated
     try {
       const { deleteDoc, doc } = await import('firebase/firestore');
       const { db } = await import('../lib/firebase');
-      await deleteDoc(doc(db, 'experiences', id));
+      const { handleFirestoreError, OperationType } = await import('../lib/firestoreErrors');
+      
+      try {
+        await deleteDoc(doc(db, 'experiences', id));
+      } catch (err: any) {
+        if (err?.code === 'permission-denied') {
+          handleFirestoreError(err, OperationType.DELETE, deletePath);
+        }
+        // For other errors, we continue to the server-side delete
+      }
     } catch (fsErr) {
       // Optional direct delete fallback
     }

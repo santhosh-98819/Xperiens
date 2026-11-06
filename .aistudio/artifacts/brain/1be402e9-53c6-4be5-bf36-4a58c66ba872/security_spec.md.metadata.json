@@ -1,0 +1,5 @@
+{
+  "summary": "Security specification for Xperiens Firestore rules, defining data invariants and test payloads to prevent unauthorized access and data corruption.",
+  "updatedAt": "2026-11-06T10:53:46.253184999Z",
+  "userFacing": true
+}

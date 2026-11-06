@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { Category, OutcomeStatus, Experience } from '../types';
-import { submitExperience } from '../services/api';
+import { Category, OutcomeStatus, Experience, ExperienceValidationResult } from '../types';
+import { submitExperience, validateExperience } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import {
@@ -19,6 +19,7 @@ import {
   BookOpen,
   Check,
   Send,
+  AlertCircle,
 } from 'lucide-react';
 import { ViewMode } from '../App';
 
@@ -50,6 +51,17 @@ export const ShareExperienceView: React.FC<ShareExperienceViewProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Quality Guard State
+  const [validationResult, setValidationResult] = useState<ExperienceValidationResult | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
+  const [bypassWarning, setBypassWarning] = useState(false);
+
+  // Clear validation if inputs change
+  React.useEffect(() => {
+    setValidationResult(null);
+    setBypassWarning(false);
+  }, [q1TryingToDo, q2ProblemFaced, q3WhatTried, q4WhatHappened, q5WhatLearned, q6WhatDoDifferently]);
 
   const activeCategoryConfig = getCategoryConfig(category);
 
@@ -88,8 +100,40 @@ export const ShareExperienceView: React.FC<ShareExperienceViewProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     setError(null);
+
+    // Authenticity & Quality Guard Validation
+    if (!validationResult || (!validationResult.isValid) || (validationResult.riskLevel !== 'low' && !bypassWarning)) {
+      setIsValidating(true);
+      try {
+        const pillars = {
+          trying_to_do: q1TryingToDo,
+          problem_faced: q2ProblemFaced,
+          what_tried: q3WhatTried,
+          what_happened: q4WhatHappened,
+          what_learned: q5WhatLearned,
+          what_differently: q6WhatDoDifferently
+        };
+        const result = await validateExperience(pillars, userProfile?.languagePreference);
+        setValidationResult(result);
+        setIsValidating(false);
+
+        if (!result.isValid) {
+          // Block publication due to meaningless content or high risk
+          return;
+        }
+
+        if (result.riskLevel !== 'low' && !bypassWarning) {
+          // Show warning for medium/high risk but allow bypass if they choose
+          return;
+        }
+      } catch (err) {
+        console.warn('Quality Guard bypassed due to service error:', err);
+        setIsValidating(false);
+      }
+    }
+
+    setIsSubmitting(true);
 
     const situationCombined = q2ProblemFaced.trim()
       ? `${q1TryingToDo.trim()}\n\nChallenge: ${q2ProblemFaced.trim()}`
@@ -444,6 +488,49 @@ export const ShareExperienceView: React.FC<ShareExperienceViewProps> = ({
               <h2 className="text-2xl font-serif font-bold">{t('share.step5_title')}</h2>
               <p className="text-sm text-brand-text-secondary dark:text-dark-text-secondary">{t('share.step5_desc')}</p>
             </div>
+
+            {/* Quality Guard Feedback */}
+            {isValidating && (
+              <div className="p-6 bg-brand-accent/5 dark:bg-dark-accent/5 border border-brand-accent/20 rounded-xl animate-pulse flex items-center gap-3">
+                <div className="w-5 h-5 border-2 border-brand-accent border-t-transparent rounded-full animate-spin" />
+                <p className="text-sm font-medium">Verifying experience authenticity and quality...</p>
+              </div>
+            )}
+
+            {validationResult && !validationResult.isValid && (
+              <div className="p-6 bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900 rounded-xl space-y-3">
+                <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-bold text-sm">
+                   <AlertCircle className="w-5 h-5" />
+                   Quality Guard: Meaningless Content Blocked
+                </div>
+                <p className="text-sm text-brand-text-secondary dark:text-dark-text-secondary">{validationResult.feedback || validationResult.reason}</p>
+                {validationResult.suggestedFixes && validationResult.suggestedFixes.length > 0 && (
+                  <ul className="list-disc list-inside text-xs space-y-1 text-brand-text-secondary opacity-80">
+                    {validationResult.suggestedFixes.map((fix, i) => <li key={i}>{fix}</li>)}
+                  </ul>
+                )}
+                <button onClick={() => setCurrentStep(2)} className="text-xs font-bold text-brand-accent underline">Return to edit pillars</button>
+              </div>
+            )}
+
+            {validationResult && validationResult.isValid && validationResult.riskLevel !== 'low' && !bypassWarning && (
+               <div className="p-6 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900 rounded-xl space-y-3">
+                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-bold text-sm">
+                   <AlertCircle className="w-5 h-5" />
+                   Quality Guard: Quality Assessment Warning
+                </div>
+                <p className="text-sm text-brand-text-secondary dark:text-dark-text-secondary">{validationResult.feedback}</p>
+                {validationResult.suggestedFixes && validationResult.suggestedFixes.length > 0 && (
+                  <ul className="list-disc list-inside text-xs space-y-1 text-brand-text-secondary opacity-80">
+                    {validationResult.suggestedFixes.map((fix, i) => <li key={i}>{fix}</li>)}
+                  </ul>
+                )}
+                <div className="flex gap-4 pt-2">
+                   <button onClick={() => setCurrentStep(2)} className="px-4 py-2 border border-brand-border rounded-lg text-xs font-bold">Edit Details</button>
+                   <button onClick={() => setBypassWarning(true)} className="px-4 py-2 bg-amber-600 text-white rounded-lg text-xs font-bold">Publish Anyway</button>
+                </div>
+              </div>
+            )}
 
             <div className="p-10 bg-brand-card dark:bg-dark-card border border-brand-border dark:border-dark-border rounded-2xl space-y-10">
               <div className="flex items-center justify-between gap-4 border-b border-brand-border dark:border-dark-border pb-6">
